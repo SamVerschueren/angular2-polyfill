@@ -1,0 +1,26 @@
+{
+  "name": "angular2-polyfill",
+  "version": "0.0.0",
+  "description": "Angular2 polyfill for Angular1",
+  "license": "MIT",
+  "repository": "SamVerschueren/angular2-polyfill",
+  "author": {
+    "name": "Sam Verschueren",
+    "email": "sam.verschueren@gmail.com",
+    "url": "github.com/SamVerschueren"
+  },
+  "main": false,
+  "scripts": {
+    "prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "dependencies": {
+    "angular": "^1.4.8",
+    "camelcase": "^2.0.1",
+    "dot-prop": "^2.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^1.7.5"
+  }
+}
