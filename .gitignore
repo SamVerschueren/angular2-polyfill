@@ -1,7 +1,6 @@
 node_modules
+typings
 .vscode
 **/*.js
 **/*.js.map
 **/*.d.ts
-
-!typings/**/*.d.ts
