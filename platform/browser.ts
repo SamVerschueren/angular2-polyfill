@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import camelcase = require('camelcase');
+import camelcase from 'camelcase';
 
 function coreBootstrap(component) {
 	const appName = component.__annotations__.component.selector;

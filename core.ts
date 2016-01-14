@@ -1,5 +1,5 @@
 import * as dotProp from 'dot-prop';
-import camelcase = require('camelcase');
+import camelcase from 'camelcase';
 
 /**
  * Helper functions
@@ -17,14 +17,14 @@ function annotate(target, key, value) {
  * Interfaces
  */
 
-export interface ComponentInterface {
-	selector: string,
-	template: string,
-	templateUrl: string,
-	controllerAs: string,
-	directives: any[],
-	providers: any[],
-	pipes: any[]
+export interface ComponentMetadata {
+	selector?: string,
+	exportAs?: string,
+	template?: string,
+	templateUrl?: string,
+	directives?: any[],
+	providers?: any[],
+	pipes?: any[]
 }
 
 export interface PipeInterface {
@@ -44,7 +44,7 @@ export interface PipeTransform {
  * Decorators
  */
 
-export function Component(component: any) {
+export function Component(component: ComponentMetadata) {
 	return (target: any) => {
 		annotate(target, 'component', component);
 	};

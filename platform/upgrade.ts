@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import camelcase = require('camelcase');
+import camelcase from 'camelcase';
 
 const map = {};
 const states = {};
@@ -29,7 +29,7 @@ function bootstrapComponent(ngModule, target) {
 				scope: {},
 				bindToController: {},
 				controller: target.name,
-				controllerAs: component.controllerAs || name,
+				controllerAs: component.exportAs || name,
 				compile: () => {
 					return {
 						pre: (scope, el) => {
@@ -61,7 +61,7 @@ function bootstrapComponent(ngModule, target) {
 				bootstrapHelper(ngModule, route.component);
 			}
 
-			states[route.as] = {
+			states[route.name || route.as] = {
 				url: route.path,
 				controller: route.component.name,
 				template: `<${map[route.component.name]}></${map[route.component.name]}>`,

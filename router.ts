@@ -1,10 +1,11 @@
 import * as dotProp from 'dot-prop';
 
 export interface RouteDefinition {
-	path: string,
-	component: any,
-	as: string,
-	useAsDefault: boolean
+	path?: string,
+	component?: any,
+	as?: string,
+	name?: string,
+	useAsDefault?: boolean
 }
 
 /**
