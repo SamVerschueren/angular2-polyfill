@@ -11,16 +11,20 @@
   },
   "main": false,
   "scripts": {
+    "postinstall": "npm run typings install",
     "prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "typings": "typings"
   },
   "dependencies": {
     "angular": "^1.4.8",
     "camelcase": "^2.0.1",
-    "dot-prop": "^2.2.0"
+    "dot-prop": "^2.2.0",
+    "reflect-metadata": "^0.1.3"
   },
   "devDependencies": {
-    "typescript": "^1.7.5"
+    "typescript": "^1.7.5",
+    "typings": "^0.6.8"
   }
 }

@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import camelcase from 'camelcase';
+import * as camelcase from 'camelcase';
 
 function coreBootstrap(component) {
 	const appName = component.__annotations__.component.selector;
@@ -12,8 +12,11 @@ function coreBootstrap(component) {
 		.run(['$q', '$window', function($q, $window) {
 			// Create an Angular aware global Promise object
 			$window.Promise = function (executor) {
+				console.log('Promise');
 				return $q(executor);
 			};
+
+			console.log('promise overwritten');
 
 			$window.Promise.all = $q.all.bind($q);
 			$window.Promise.reject = $q.reject.bind($q);

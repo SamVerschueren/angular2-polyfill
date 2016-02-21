@@ -1,5 +1,4 @@
 import * as dotProp from 'dot-prop';
-import camelcase from 'camelcase';
 
 /**
  * Helper functions

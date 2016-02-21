@@ -1,8 +1,63 @@
 import * as angular from 'angular';
-import camelcase from 'camelcase';
+import * as camelcase from 'camelcase';
+import 'reflect-metadata';
 
+let bootstrapped = false;
 const map = {};
 const states = {};
+
+function inject(target) {
+	if (Reflect.hasMetadata('design:paramtypes', target)) {
+		target.$inject = Reflect.getMetadata('design:paramtypes', target).map(function(type) {
+			return camelcase(type.name);
+		});
+	}
+}
+
+function coreBootstrap(ngModule, component) {
+	if (bootstrapped) {
+		return;
+	}
+
+	bootstrapped = true;
+
+	ngModule.run(['$q', '$window', function($q, $window) {
+		// Create an Angular aware global Promise object
+		$window.Promise = function (executor) {
+			return $q(executor);
+		};
+
+		$window.Promise.all = $q.all.bind($q);
+		$window.Promise.reject = $q.reject.bind($q);
+		$window.Promise.resolve = $q.when.bind($q);
+
+		$window.Promise.race = function (promises) {
+			var promiseMgr = $q.defer();
+
+			var resolve = function (result) {
+				if (promiseMgr) {
+					promiseMgr.resolve(result);
+					promiseMgr = null;
+				}
+			};
+
+			var reject = function (err) {
+				if (promiseMgr) {
+					promiseMgr.reject(err);
+					promiseMgr = null;
+				}
+			};
+
+			for (var i = 0; i < promises.length; i++) {
+				promises[i]
+					.then(resolve)
+					.catch(reject);
+			}
+
+			return promiseMgr.promise;
+		};
+	}]);
+}
 
 function bootstrapComponent(ngModule, target) {
 	const annotations = target.__annotations__;
@@ -15,11 +70,13 @@ function bootstrapComponent(ngModule, target) {
 
 	map[target.name] = component.selector;
 
-	// Bootstrap and inject the providers
-	target.$inject = (component.providers || []).map(provider => bootstrapHelper(ngModule, provider));
-
+	// Bootstrap providers, directives and pipes
+	(component.providers || []).forEach(provider => bootstrapHelper(ngModule, provider));
 	(component.directives || []).forEach(directive => bootstrapHelper(ngModule, directive));
 	(component.pipes || []).forEach(pipe => bootstrapHelper(ngModule, pipe));
+
+	// Inject the services
+	inject(target);
 
 	ngModule
 		.controller(target.name, target)
@@ -87,6 +144,9 @@ function bootstrapComponent(ngModule, target) {
 function bootstrapInjectable(ngModule, target) {
 	const name = camelcase(target.name);
 
+	// Inject the services
+	inject(target);
+
 	ngModule.service(name, target);
 
 	return name;
@@ -109,15 +169,19 @@ function bootstrapPipe(ngModule, target) {
 }
 
 function bootstrapHelper(ngModule, target): any {
-	if (target.__annotations__.component) {
-		return bootstrapComponent(ngModule, target);
-	} else if (target.__annotations__.injectable) {
+	if (!target.__annotations__ || target.__annotations__.injectable) {
 		return bootstrapInjectable(ngModule, target);
+	} else if (target.__annotations__.component) {
+		return bootstrapComponent(ngModule, target);
 	} else if (target.__annotations__.pipe) {
 		return bootstrapPipe(ngModule, target);
 	}
 }
 
 export function bootstrap(ngModule, component) {
+	// Bootstrap the core
+	coreBootstrap(ngModule, component);
+
+	// Bootstrap the app tree
 	bootstrapHelper(ngModule, component);
 }
