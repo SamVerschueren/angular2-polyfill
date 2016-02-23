@@ -7,11 +7,28 @@ const map = {};
 const states = {};
 
 function inject(target) {
-	if (Reflect.hasMetadata('design:paramtypes', target)) {
-		target.$inject = Reflect.getMetadata('design:paramtypes', target).map(function(type) {
-			return camelcase(type.name);
+	var annotations = target.__annotations__ || {};
+	var injectables = [];
+
+	if (annotations.inject) {
+		annotations.inject.forEach(function(injectable, index) {
+			if (typeof injectable === 'string') {
+				injectables[index] = camelcase(injectable);
+			} else if (injectable) {
+				injectables[index] = camelcase(injectable.name);
+			}
 		});
 	}
+
+	if (Reflect.hasMetadata('design:paramtypes', target)) {
+		Reflect.getMetadata('design:paramtypes', target).forEach(function(type, index) {
+			if (type.name !== 'Object') {
+				injectables[index] = camelcase(type.name);
+			}
+		});
+	}
+
+	target.$inject = injectables;
 }
 
 function coreBootstrap(ngModule, component) {
@@ -169,19 +186,28 @@ function bootstrapPipe(ngModule, target) {
 }
 
 function bootstrapHelper(ngModule, target): any {
-	if (!target.__annotations__ || target.__annotations__.injectable) {
-		return bootstrapInjectable(ngModule, target);
-	} else if (target.__annotations__.component) {
-		return bootstrapComponent(ngModule, target);
-	} else if (target.__annotations__.pipe) {
-		return bootstrapPipe(ngModule, target);
+	if (Array.isArray(target)) {
+		return target.forEach(target => bootstrapHelper(ngModule, target));
 	}
+
+	if (target.__annotations__) {
+		if (target.__annotations__.component) {
+			return bootstrapComponent(ngModule, target);
+		} else if (target.__annotations__.pipe) {
+			return bootstrapPipe(ngModule, target);
+		}
+	}
+
+	return bootstrapInjectable(ngModule, target);
 }
 
-export function bootstrap(ngModule, component) {
+export function bootstrap(ngModule, component, providers:any[] = []) {
 	// Bootstrap the core
 	coreBootstrap(ngModule, component);
 
 	// Bootstrap the app tree
 	bootstrapHelper(ngModule, component);
+
+	// Bootstrap providers
+	providers.forEach(provider => bootstrapHelper(ngModule, provider));
 }

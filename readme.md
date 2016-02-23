@@ -31,7 +31,7 @@ import {HomeComponent} from '../home/home.component';
     { path: '/', component: HomeComponent, name: 'Home', useAsDefault: true }
 ])
 export class AppComponent {
-    
+
 }
 ```
 
@@ -99,6 +99,7 @@ We are using SystemJS as module loader. Feel free to use something else.
 - @Component
 - @RouteConfig
 - @Injectable
+- @Inject
 - @Pipe
 
 

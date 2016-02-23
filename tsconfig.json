@@ -4,7 +4,8 @@
     "module": "commonjs",
     "outDir": "./",
     "sourceMap": false,
-    "declaration": true
+    "declaration": true,
+    "experimentalDecorators": true
   },
   "exclude": [
     "node_modules",

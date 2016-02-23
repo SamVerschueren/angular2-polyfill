@@ -1,6 +1,4 @@
-/**
- * $http definition
- */
+import {Inject} from './core';
 
 export interface RequestOptionsArgs {
 	params?: string | any;
@@ -25,17 +23,42 @@ export interface Response {
 	statusText: string;
 }
 
-export abstract class Http {
-	// Angular 2.0
-	abstract get(url: string, options?: RequestOptionsArgs): Promise<Response>;
-	abstract post(url: string, body: any, options?: RequestOptionsArgs): Promise<Response>;
-	abstract put(url: string, body: any, options?: RequestOptionsArgs): Promise<Response>;
-	abstract delete(url: string, options?: RequestOptionsArgs): Promise<Response>;
-	abstract patch(url: string, body: any, options?: RequestOptionsArgs): Promise<Response>;
-	abstract head(url: string, options?: RequestOptionsArgs): Promise<Response>;
+export class Http {
 
-	// Angular 1.x
-	abstract jsonp(url: string, options?: RequestOptionsArgs): Promise<Response>;
+	// Inject good old `$http`
+	constructor(@Inject('$http') private http) {
+
+	}
+
+	// // TODO IMPLEMENT
+	// request(url: string | Request, options?: RequestOptionsArgs): Promise<Response> {
+	//
+	// }
+
+	get(url: string, options?: RequestOptionsArgs): Promise<Response> {
+		return this.http.get(url, options);
+	}
+
+	post(url: string, body: any, options?: RequestOptionsArgs): Promise<Response> {
+		return this.http.post(url, body, options);
+	}
+
+	put(url: string, body: any, options?: RequestOptionsArgs): Promise<Response> {
+		return this.http.put(url, body, options);
+	}
+
+	delete(url: string, options?: RequestOptionsArgs): Promise<Response> {
+		return this.http.delete(url, options);
+	}
+
+	patch(url: string, body: any, options?: RequestOptionsArgs): Promise<Response> {
+		return this.http.patch(url, body, options);
+	}
+
+	head(url: string, options?: RequestOptionsArgs): Promise<Response> {
+		return this.http.head(url, options);
+	}
 }
 
-Object.defineProperty(Http, 'name', { value: '$http' });
+// Export the providers
+export const HTTP_PROVIDERS = [Http];
