@@ -1,0 +1,12 @@
+# Directories
+node_modules
+typings
+.vscode
+
+# Dot files
+.npmignore
+.gitignore
+.editorconfig
+
+# d.ts files
+**/*.d.ts
