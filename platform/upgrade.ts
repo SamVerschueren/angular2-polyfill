@@ -130,12 +130,17 @@ function bootstrapComponent(ngModule, target) {
 		}]);
 
 	if (annotations.routes) {
+		var cmpStates = [];
+
 		annotations.routes.forEach(route => {
 			if (route.component.name !== component.name) {
 				bootstrapHelper(ngModule, route.component);
 			}
 
-			states[route.name || route.as] = {
+			var name = route.name || route.as;
+
+			cmpStates.push(name);
+			states[name] = {
 				url: route.path,
 				controller: route.component.name,
 				template: `<${map[route.component.name]}></${map[route.component.name]}>`,
@@ -144,7 +149,7 @@ function bootstrapComponent(ngModule, target) {
 		});
 
 		ngModule.config(['$urlRouterProvider', '$stateProvider', ($urlRouterProvider, $stateProvider) => {
-			Object.keys(states).forEach(name => {
+			cmpStates.forEach(name => {
 				const state = states[name];
 				$stateProvider.state(name, state);
 
