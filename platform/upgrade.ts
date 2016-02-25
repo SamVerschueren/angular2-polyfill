@@ -80,6 +80,8 @@ function bootstrapComponent(ngModule, target) {
 	const annotations = target.__annotations__;
 	const component = annotations.component;
 	const name = camelcase(component.selector);
+	const styleElements: any[] = [];
+	const headEl = angular.element(document).find('head');
 
 	if (map[target.name]) {
 		return name;
@@ -91,6 +93,14 @@ function bootstrapComponent(ngModule, target) {
 	(component.providers || []).forEach(provider => bootstrapHelper(ngModule, provider));
 	(component.directives || []).forEach(directive => bootstrapHelper(ngModule, directive));
 	(component.pipes || []).forEach(pipe => bootstrapHelper(ngModule, pipe));
+
+	// Define the style elements
+	(component.styles || []).forEach(style => {
+		styleElements.push(angular.element('<style type="text/css">@charset "UTF-8";' + style + '</style>'));
+	});
+	(component.styleUrls || []).forEach(url => {
+		styleElements.push(angular.element('<link rel="stylesheet" href="' + url + '">'));
+	});
 
 	// Inject the services
 	inject(target);
@@ -111,6 +121,14 @@ function bootstrapComponent(ngModule, target) {
 								const init = $compile(`<div ng-init="${name}.ngOnInit();"></div>`)(scope);
 								el.append(init);
 							}
+
+							// Prepend all the style elements
+							styleElements.forEach(el => headEl.prepend(el));
+
+							// Remove all the style elements when destroying the directive
+							scope.$on('$destroy', () => {
+								styleElements.forEach(el => el.remove());
+							});
 						}
 					}
 				}

@@ -45,7 +45,12 @@ import {Component} from 'angular2-polyfill/core'
 
 @Component({
     selector: 'home',
-    template: '<h1>{{ home.title }}</h1>'
+    template: '<h1>{{ home.title }}</h1>',
+	styles: [`
+		h1 {
+			color: red;
+		}
+	`]
 })
 export class HomeComponent {
     private title: string = 'Hello World';
