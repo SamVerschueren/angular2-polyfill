@@ -18,6 +18,7 @@ function annotate(target, key, value) {
 
 export interface ComponentMetadata {
 	selector?: string,
+	inputs?: string[],
 	exportAs?: string,
 	template?: string,
 	templateUrl?: string,
