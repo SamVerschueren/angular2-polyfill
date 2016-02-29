@@ -76,7 +76,7 @@ function coreBootstrap(ngModule, component) {
 	}]);
 }
 
-function bootstrapComponent(ngModule, target) {
+function bootstrapComponent(ngModule, target, parentState?: string) {
 	const annotations = target.__annotations__;
 	const component = annotations.component;
 	const name = camelcase(component.selector);
@@ -151,11 +151,15 @@ function bootstrapComponent(ngModule, target) {
 		var cmpStates = [];
 
 		annotations.routes.forEach(route => {
-			if (route.component.name !== component.name) {
-				bootstrapHelper(ngModule, route.component);
+			let name = route.name || route.as;
+
+			if (parentState) {
+				name = `${parentState}.${name}`;
 			}
 
-			var name = route.name || route.as;
+			if (route.component.name !== component.name) {
+				bootstrapComponent(ngModule, route.component, name);
+			}
 
 			cmpStates.push(name);
 			states[name] = {
@@ -172,7 +176,19 @@ function bootstrapComponent(ngModule, target) {
 				$stateProvider.state(name, state);
 
 				if (state.isDefault) {
-					$urlRouterProvider.otherwise(state.url);
+					if (state.parent) {
+						let parentState = states[state.parent];
+						let from = parentState.url;
+
+						while (parentState.parent) {
+							parentState = states[parentState.parent];
+							from = parentState.url + from;
+						}
+
+						$urlRouterProvider.when(from, from + state.url);
+					} else {
+						$urlRouterProvider.otherwise(state.url);
+					}
 				}
 			});
 		}])
