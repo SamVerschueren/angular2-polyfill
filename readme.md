@@ -108,6 +108,23 @@ We are using SystemJS as module loader. Feel free to use something else.
 - @Pipe
 
 
+## Services
+
+### HTTP
+
+- Http
+
+### Routing
+
+- Router
+- RouteParams
+
+
+## Examples
+
+- [Tour of Heroes](https://github.com/SamVerschueren/angular2-polyfill-heroes) - Tour of Heroes implementation
+
+
 ## License
 
 MIT © [Sam Verschueren](https://github.com/SamVerschueren)
