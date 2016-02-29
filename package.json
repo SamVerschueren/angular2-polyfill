@@ -15,7 +15,8 @@
     "prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "typings": "typings"
+    "typings": "typings",
+    "link": "jspm link npm:angular2-polyfill@dev -y"
   },
   "dependencies": {
     "angular": "^1.4.8",
