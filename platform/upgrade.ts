@@ -151,11 +151,7 @@ function bootstrapComponent(ngModule, target, parentState?: string) {
 		var cmpStates = [];
 
 		annotations.routes.forEach(route => {
-			let name = route.name || route.as;
-
-			if (parentState) {
-				name = `${parentState}.${name}`;
-			}
+			const name = route.name || route.as;
 
 			if (route.component.name !== component.name) {
 				bootstrapComponent(ngModule, route.component, name);
@@ -168,6 +164,10 @@ function bootstrapComponent(ngModule, target, parentState?: string) {
 				template: `<${map[route.component.name]}></${map[route.component.name]}>`,
 				isDefault: route.useAsDefault === true
 			};
+
+			if (parentState) {
+				states[name].parent = parentState;
+			}
 		});
 
 		ngModule.config(['$urlRouterProvider', '$stateProvider', ($urlRouterProvider, $stateProvider) => {
