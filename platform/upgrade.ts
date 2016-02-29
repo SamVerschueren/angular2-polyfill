@@ -13,9 +13,9 @@ function inject(target) {
 	if (annotations.inject) {
 		annotations.inject.forEach(function(injectable, index) {
 			if (typeof injectable === 'string') {
-				injectables[index] = camelcase(injectable);
+				injectables[index] = injectable;
 			} else if (injectable) {
-				injectables[index] = camelcase(injectable.name);
+				injectables[index] = injectable.name;
 			}
 		});
 	}
@@ -23,7 +23,7 @@ function inject(target) {
 	if (Reflect.hasMetadata('design:paramtypes', target)) {
 		Reflect.getMetadata('design:paramtypes', target).forEach(function(type, index) {
 			if (type.name !== 'Object') {
-				injectables[index] = camelcase(type.name);
+				injectables[index] = type.name;
 			}
 		});
 	}
@@ -198,7 +198,7 @@ function bootstrapComponent(ngModule, target, parentState?: string) {
 }
 
 function bootstrapInjectable(ngModule, target) {
-	const name = camelcase(target.name);
+	const name = target.name;
 
 	// Inject the services
 	inject(target);
