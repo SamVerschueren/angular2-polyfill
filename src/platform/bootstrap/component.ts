@@ -43,6 +43,7 @@ export function bootstrap(ngModule, target, parentState?: string) {
 				bindToController: {},
 				controller: target.name,
 				controllerAs: component.exportAs || name,
+				transclude: true,
 				compile: () => {
 					return {
 						pre: (scope, el) => {
