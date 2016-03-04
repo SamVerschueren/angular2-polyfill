@@ -48,16 +48,22 @@ export function bootstrap(ngModule, target, parentState?: string) {
 					return {
 						pre: (scope, el) => {
 							if (target.prototype.ngOnInit) {
+								// Call the `ngOnInit` lifecycle hook
 								const init = $compile(`<div ng-init="${name}.ngOnInit();"></div>`)(scope);
 								el.append(init);
 							}
 
-							// Prepend all the style elements
+							// Prepend all the style elements to the `head` dom element
 							styleElements.forEach(el => headEl.prepend(el));
 
-							// Remove all the style elements when destroying the directive
 							scope.$on('$destroy', () => {
+								// Remove all the style elements when destroying the directive
 								styleElements.forEach(el => el.remove());
+
+								if (target.prototype.ngOnDestroy) {
+									// Call the `ngOnDestroy` lifecycle hook
+									scope[name].ngOnDestroy();
+								}
 							});
 						}
 					}

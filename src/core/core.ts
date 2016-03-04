@@ -3,3 +3,8 @@ export {Inject} from './decorators/Inject';
 export {Injectable} from './decorators/Injectable';
 export {Input} from './decorators/Input';
 export {Pipe} from './decorators/Pipe';
+
+export {OnInit} from './interfaces/OnInit';
+export {OnDestroy} from './interfaces/OnDestroy';
+
+export {PipeTransform} from './interfaces/PipeTransform';
