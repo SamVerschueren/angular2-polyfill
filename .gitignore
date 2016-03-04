@@ -1,6 +1,7 @@
 node_modules
 typings
 .vscode
+.idea
 **/*.js
 **/*.js.map
 **/*.d.ts
