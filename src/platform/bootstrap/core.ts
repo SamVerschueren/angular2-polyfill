@@ -1,3 +1,5 @@
+import * as angular from 'angular';
+
 let bootstrapped = false;
 
 export function bootstrap(ngModule, component) {
@@ -43,4 +45,8 @@ export function bootstrap(ngModule, component) {
 			return promiseMgr.promise;
 		};
 	}]);
+
+	angular.element(document).ready(function () {
+		angular.bootstrap(document, [ngModule.name])
+	});
 }
