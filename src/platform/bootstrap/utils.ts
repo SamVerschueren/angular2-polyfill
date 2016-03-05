@@ -28,6 +28,42 @@ export function inject(target) {
 	target.$inject = injectables;
 }
 
+export function bindInput(target, directive) {
+	const annotations = target.__annotations__;
+	const component = annotations.component;
+
+	function signOf(key) {
+		if (Reflect.hasMetadata('design:type', target.prototype, key)) {
+			const type = Reflect.getMetadata('design:type', target.prototype, key);
+
+			if (type.name === 'String') {
+				return '@';
+			}
+		}
+
+		return '=';
+	}
+
+	// Bind all the elements in the `inputs` array
+	(component.inputs || []).forEach(key => {
+		directive.bindToController[key] = signOf(key);
+	});
+
+	// Bind all the elements in the `@Input` annotation list
+	Object.keys(annotations.inputs || {}).forEach(key => {
+		directive.bindToController[key] = signOf(key) + annotations.inputs[key];
+	});
+}
+
+export function bindOutput(target, directive) {
+	const annotations = target.__annotations__;
+	const component = annotations.component;
+
+	// Bind all the elements in the `outputs` array or in the `@Output` annotation list
+	(component.outputs || []).forEach(key => directive.bindToController[key] = '&');
+	Object.keys(annotations.outputs || {}).forEach(key => directive.bindToController[key] = `&${annotations.outputs[key]}`);
+}
+
 export function bootstrapHelper(ngModule, target): any {
 	if (Array.isArray(target)) {
 		return target.forEach(target => bootstrapHelper(ngModule, target));

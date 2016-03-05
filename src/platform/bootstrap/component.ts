@@ -1,6 +1,6 @@
 import * as angular from 'angular';
 import * as camelcase from 'camelcase';
-import {bootstrapHelper, inject} from './utils';
+import * as utils from './utils';
 
 let map = {};
 const states = {};
@@ -19,9 +19,9 @@ export function bootstrap(ngModule, target, parentState?: string) {
 	map[target.name] = component.selector;
 
 	// Bootstrap providers, directives and pipes
-	(component.providers || []).forEach(provider => bootstrapHelper(ngModule, provider));
-	(component.directives || []).forEach(directive => bootstrapHelper(ngModule, directive));
-	(component.pipes || []).forEach(pipe => bootstrapHelper(ngModule, pipe));
+	(component.providers || []).forEach(provider => utils.bootstrapHelper(ngModule, provider));
+	(component.directives || []).forEach(directive => utils.bootstrapHelper(ngModule, directive));
+	(component.pipes || []).forEach(pipe => utils.bootstrapHelper(ngModule, pipe));
 
 	// Define the style elements
 	(component.styles || []).forEach(style => {
@@ -32,7 +32,7 @@ export function bootstrap(ngModule, target, parentState?: string) {
 	});
 
 	// Inject the services
-	inject(target);
+	utils.inject(target);
 
 	ngModule
 		.controller(target.name, target)
@@ -70,10 +70,11 @@ export function bootstrap(ngModule, target, parentState?: string) {
 				}
 			};
 
-			(component.inputs || []).forEach(input => directive.bindToController[input] = '=');
+			// Bind inputs and outputs
+			utils.bindInput(target, directive);
+			utils.bindOutput(target, directive);
 
-			Object.keys(annotations.inputs || {}).forEach(key => directive.bindToController[key] = '=' + annotations.inputs[key]);
-
+			// Set the template
 			if (component.template) {
 				directive.template = component.template;
 			} else {
