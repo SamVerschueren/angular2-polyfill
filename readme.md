@@ -102,6 +102,7 @@ We are using SystemJS as module loader. Feel free to use something else.
 ## Decorators
 
 - @Component
+- @Directive
 - @RouteConfig
 - @Injectable
 - @Inject

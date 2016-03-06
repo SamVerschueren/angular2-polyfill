@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import {bootstrap as bootstrapComponent} from './component';
+import {bootstrap as bootstrapDirective} from './directive';
 import {bootstrap as bootstrapPipe} from './pipe';
 import {bootstrap as bootstrapInjectable} from './injectable';
 
@@ -30,7 +31,7 @@ export function inject(target) {
 
 export function bindInput(target, directive) {
 	const annotations = target.__annotations__;
-	const component = annotations.component;
+	const component = annotations.component || annotations.directive;
 
 	function signOf(key) {
 		if (Reflect.hasMetadata('design:type', target.prototype, key)) {
@@ -57,7 +58,7 @@ export function bindInput(target, directive) {
 
 export function bindOutput(target, directive) {
 	const annotations = target.__annotations__;
-	const component = annotations.component;
+	const component = annotations.component || annotations.directive;
 
 	// Bind all the elements in the `outputs` array or in the `@Output` annotation list
 	(component.outputs || []).forEach(key => directive.bindToController[key] = '&');
@@ -72,6 +73,8 @@ export function bootstrapHelper(ngModule, target): any {
 	if (target.__annotations__) {
 		if (target.__annotations__.component) {
 			return bootstrapComponent(ngModule, target);
+		} else if (target.__annotations__.directive) {
+			return bootstrapDirective(ngModule, target);
 		} else if (target.__annotations__.pipe) {
 			return bootstrapPipe(ngModule, target);
 		}

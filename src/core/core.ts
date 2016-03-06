@@ -1,4 +1,5 @@
 export {Component} from './decorators/Component';
+export {Directive} from './decorators/Directive';
 export {Inject} from './decorators/Inject';
 export {Injectable} from './decorators/Injectable';
 export {Input} from './decorators/Input';
