@@ -39,15 +39,18 @@ export function bindInput(target, directive) {
 
 			if (type.name === 'String') {
 				return '@';
+			} else {
+				return '=';
 			}
 		}
 
-		return '=';
+		return '@';
 	}
 
 	// Bind all the elements in the `inputs` array
 	(component.inputs || []).forEach(key => {
-		directive.bindToController[key] = signOf(key);
+		const mapping = key.split(/:[ ]*/);
+		directive.bindToController[mapping[0]] = signOf(key) + (mapping[1] || mapping[0]);
 	});
 
 	// Bind all the elements in the `@Input` annotation list
@@ -61,7 +64,10 @@ export function bindOutput(target, directive) {
 	const component = annotations.component || annotations.directive;
 
 	// Bind all the elements in the `outputs` array or in the `@Output` annotation list
-	(component.outputs || []).forEach(key => directive.bindToController[key] = '&');
+	(component.outputs || []).forEach(key => {
+		const mapping = key.split(/:[ ]*/);
+		directive.bindToController[mapping[0]] = '&' + (mapping[1] || mapping[0]);
+	});
 	Object.keys(annotations.outputs || {}).forEach(key => directive.bindToController[key] = `&${annotations.outputs[key]}`);
 }
 
