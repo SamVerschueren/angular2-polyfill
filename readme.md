@@ -79,7 +79,7 @@ bootstrap(ngModule, AppComponent);
 ### index.html
 
 ```html
-<html ng-app="angular2-polyfill">
+<html>
 <head>
     <meta charset="utf-8">
 </head>
