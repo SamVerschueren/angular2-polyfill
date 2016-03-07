@@ -97,7 +97,10 @@ export function bootstrap(ngModule, target) {
 
 						el.bind(event, e => {
 							const ctx = {$event: e};
-							scope.ctrl[target.method].apply(scope.ctrl, target.params.map(param => dotProp.get(ctx, param)));
+							// use scope.$apply because we are outside the angular digest cycle
+							scope.$apply(() => {
+								scope.ctrl[target.method].apply(scope.ctrl, target.params.map(param => dotProp.get(ctx, param)));
+							});
 						});
 					});
 
