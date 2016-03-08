@@ -70,7 +70,7 @@ function parseHosts(hostBindings: {string: string}[]) {
 				map = 'raw';
 			}
 
-			result.props[map][value] = result.props[value] || [];
+			result.props[map][value] = result.props[map][value] || [];
 			result.props[map][value].push(parsed.value);
 		}
 	});
