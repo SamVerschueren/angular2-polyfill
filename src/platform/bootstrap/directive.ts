@@ -41,11 +41,14 @@ function parseHosts(hostBindings: {string: string}[]) {
 	const result = {
 		attrs: {},
 		events: {},
-		props: {}
+		props: {
+			raw: {},
+			expressions: {}
+		}
 	};
 
 	Object.keys(hostBindings).forEach(key => {
-		const value = hostBindings[key];
+		let value = hostBindings[key];
 		const parsed = parseHostBinding(key);
 
 		if (parsed.type === 'attr') {
@@ -58,12 +61,47 @@ function parseHosts(hostBindings: {string: string}[]) {
 
 			result.events[parsed.value] = {method, params};
 		} else if (parsed.type === 'prop') {
-			result.props[value] = result.props[value] || [];
-			result.props[value].push(parsed.value);
+			const raw = value.match(/^['"](.*?)['"]$/);
+			let map = 'expressions';
+
+			if (raw) {
+				// If the value is escaped, it's a raw value and should be applied directly
+				value = raw[1];
+				map = 'raw';
+			}
+
+			result.props[map][value] = result.props[value] || [];
+			result.props[map][value].push(parsed.value);
 		}
 	});
 
 	return result;
+}
+
+function applyValueToProperties(el: angular.IRootElementService, properties: any[], value: any) {
+	properties.forEach(property => {
+		const splitted = property.split('.');
+
+		if (splitted.length === 1) {
+			// Set the property directly
+			el.prop(property, value);
+		} else {
+			const root = splitted.shift();
+
+			if (root === 'class') {
+				// Handle adding/removing class names
+				const method = value ? 'addClass' : 'removeClass';
+				el[method](splitted.join('.'));
+			} else {
+				// Handle deeply nested properties
+				let runner = el.prop(root);
+				while (splitted.length > 1) {
+					runner = runner[splitted.shift()];
+				}
+				runner[splitted.shift()] = value;
+			}
+		}
+	});
 }
 
 export function bootstrap(ngModule, target) {
@@ -85,7 +123,7 @@ export function bootstrap(ngModule, target) {
 				bindToController: {},
 				controller: target.name,
 				controllerAs: 'ctrl',
-				link: (scope, el) => {
+				link: (scope, el: angular.IRootElementService) => {
 					// Handle attributes
 					Object.keys(hostBindings.attrs).forEach(attribute => {
 						el.attr(attribute, hostBindings.attrs[attribute]);
@@ -105,35 +143,15 @@ export function bootstrap(ngModule, target) {
 					});
 
 					// Handle host property bindings
-					Object.keys(hostBindings.props).forEach(property => {
-						const bindings = hostBindings.props[property];
+					Object.keys(hostBindings.props.raw).forEach(value => {
+						const properties = hostBindings.props.raw[value];
+						applyValueToProperties(el, properties, value);
+					});
 
-						scope.$watch(`ctrl.${property}`, newValue => {
-							const value = Boolean(newValue);
-
-							bindings.forEach(binding => {
-								const splitted = binding.split('.');
-
-								if (splitted.length === 1) {
-									// Set the property directly
-									el.prop(binding, value);
-								} else {
-									const root = splitted.shift();
-
-									if (root === 'class') {
-										// Handle adding/removing class names
-										const method = value ? 'addClass' : 'removeClass';
-										el[method](splitted.join('.'));
-									} else {
-										// Handle deeply nested properties
-										let runner = el.prop(root);
-										while (splitted.length > 1) {
-											runner = runner[splitted.shift()];
-										}
-										runner[splitted.shift()] = value;
-									}
-								}
-							});
+					Object.keys(hostBindings.props.expressions).forEach(expression => {
+						const properties = hostBindings.props.expressions[expression];
+						scope.$watch(`ctrl.${expression}`, newValue => {
+							applyValueToProperties(el, properties, newValue);
 						});
 					});
 				}
