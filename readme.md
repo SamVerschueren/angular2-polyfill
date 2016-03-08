@@ -121,6 +121,12 @@ We are using SystemJS as module loader. Feel free to use something else.
 - RouteParams
 
 
+## Lifecycle hooks
+
+- ngOnInit
+- ngOnDestroy
+
+
 ## Examples
 
 - [Tour of Heroes](https://github.com/SamVerschueren/angular2-polyfill-heroes) - Tour of Heroes implementation
