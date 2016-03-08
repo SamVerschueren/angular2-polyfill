@@ -24,7 +24,7 @@ function parseSelector(selector: string) {
 function parseHostBinding(key: string) {
 	const regex = [
 		{type: 'attr', regex: /^([a-zA-Z]+)$/},
-		{type: 'prop', regex: /^\[([a-zA-Z\.]+)\]$/},
+		{type: 'prop', regex: /^\[([a-zA-Z\.-]+)\]$/},
 		{type: 'event', regex: /^\(([a-zA-Z]+)\)$/}
 	];
 
@@ -35,6 +35,8 @@ function parseHostBinding(key: string) {
 			return {type: regex[i].type, value: match[1]};
 		}
 	};
+
+	return {type: undefined, value: key};
 }
 
 function parseHosts(hostBindings: {string: string}[]) {
@@ -84,7 +86,7 @@ function applyValueToProperties(el: angular.IRootElementService, properties: any
 
 		if (splitted.length === 1) {
 			// Set the property directly
-			el.prop(property, value);
+			el.prop(camelcase(property), value);
 		} else {
 			const root = splitted.shift();
 
@@ -94,11 +96,11 @@ function applyValueToProperties(el: angular.IRootElementService, properties: any
 				el[method](splitted.join('.'));
 			} else {
 				// Handle deeply nested properties
-				let runner = el.prop(root);
+				let runner = el.prop(camelcase(root));
 				while (splitted.length > 1) {
-					runner = runner[splitted.shift()];
+					runner = runner[camelcase(splitted.shift())];
 				}
-				runner[splitted.shift()] = value;
+				runner[camelcase(splitted.shift())] = value;
 			}
 		}
 	});
