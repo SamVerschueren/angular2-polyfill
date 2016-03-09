@@ -34,6 +34,8 @@ export function bootstrap(ngModule, target, parentState?: string) {
 	// Inject the services
 	utils.inject(target);
 
+	const hostBindings = utils.parseHosts(component.host || {});
+
 	ngModule
 		.controller(target.name, target)
 		.directive(name, ['$compile', ($compile) => {
@@ -47,6 +49,9 @@ export function bootstrap(ngModule, target, parentState?: string) {
 				compile: () => {
 					return {
 						pre: (scope, el) => {
+							// Bind the hosts
+							utils.bindHostBindings(scope, el, hostBindings, component.exportAs || name);
+
 							if (target.prototype.ngOnInit) {
 								// Call the `ngOnInit` lifecycle hook
 								const init = $compile(`<div ng-init="${name}.ngOnInit();"></div>`)(scope);

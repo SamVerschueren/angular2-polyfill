@@ -2,6 +2,7 @@ export interface ComponentMetadata {
 	selector?: string,
 	inputs?: string[],
 	outputs?: string[],
+	host?: {[key: string]: string},
 	exportAs?: string,
 	template?: string,
 	templateUrl?: string,
