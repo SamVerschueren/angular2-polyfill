@@ -1,4 +1,4 @@
-import {Instruction} from '../interfaces/Instruction';
+import {Instruction} from '../instruction';
 import {annotate} from '../../utils';
 
 export function CanActivate(hook: Function | ((next: Instruction, prev: Instruction) => Promise<boolean> | boolean)) {

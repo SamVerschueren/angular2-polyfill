@@ -1,4 +1,4 @@
-import {RouteDefinition} from '../interfaces/RouteDefinition';
+import {RouteDefinition} from '../interfaces';
 import {annotate} from '../../utils';
 
 export function RouteConfig(routes: RouteDefinition[]) {

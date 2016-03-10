@@ -1,5 +1,5 @@
 import {Inject} from '../../core';
-import {Instruction} from './interfaces/Instruction';
+import {Instruction} from './instruction';
 
 export class Router {
 
