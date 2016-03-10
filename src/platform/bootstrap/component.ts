@@ -1,5 +1,6 @@
 import * as angular from 'angular';
 import * as camelcase from 'camelcase';
+import {Router} from '../../router/router.service';
 import * as utils from './utils';
 
 let map = {};
@@ -106,6 +107,41 @@ export function bootstrap(ngModule, target, parentState?: string) {
 				template: `<${map[route.component.name]}></${map[route.component.name]}>`,
 				isDefault: route.useAsDefault === true
 			};
+
+			// Attach CanActivate router hook
+			if (annotations.router && annotations.router.canActivate) {
+				const hook: any[] = ['Router', '$state', '$stateParams'];
+
+				if (Object.keys(annotations.router.canActivate.prototype).length > 0) {
+					if (!annotations.router.canActivate.prototype.routerCanActivate) {
+						throw new Error('@CanActivate class does not implement the `CanActivate` interface.');
+					}
+
+					hook.push(utils.bootstrapHelper(ngModule, annotations.router.canActivate));
+				}
+
+				hook.push((router: Router, $state, $stateParams, handler) => {
+					const fn: Function = handler ? handler.routerCanActivate : annotations.router.canActivate;
+
+					// Generate instructions for the previous and next state
+					return Promise.all([
+						router.generate([name, $stateParams]),
+						$state.current.name.length === 0 ? null : router.generate([$state.current.name, $state.params])
+					]).then(instructions => {
+						// Call the routerCanActivate hook with the instructions
+						return Promise.resolve(fn.apply(handler, instructions));
+					}).then(result => {
+						if (!result) {
+							// Reject if the result is false
+							return Promise.reject('could not activate');
+						}
+					});
+				});
+
+				states[name].resolve = {
+					routerCanActivate: hook
+				};
+			}
 
 			if (parentState) {
 				states[name].parent = parentState;
