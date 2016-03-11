@@ -5,3 +5,5 @@ typings
 **/*.js
 **/*.js.map
 **/*.d.ts
+!gulpfile.js
+!bundles/**/*.js
