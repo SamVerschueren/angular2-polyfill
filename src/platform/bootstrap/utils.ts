@@ -1,11 +1,11 @@
-import * as angular from 'angular';
 import * as camelcase from 'camelcase';
 import * as dotProp from 'dot-prop';
-import 'reflect-metadata';
 import {bootstrap as bootstrapComponent} from './component';
 import {bootstrap as bootstrapDirective} from './directive';
 import {bootstrap as bootstrapPipe} from './pipe';
 import {bootstrap as bootstrapInjectable} from './injectable';
+
+declare var Reflect;
 
 function parseHostBinding(key: string) {
 	const regex = [

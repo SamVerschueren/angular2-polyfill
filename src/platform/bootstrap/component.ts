@@ -1,4 +1,3 @@
-import * as angular from 'angular';
 import * as camelcase from 'camelcase';
 import {Router} from '../../router/router';
 import * as utils from './utils';

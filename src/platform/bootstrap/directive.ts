@@ -1,4 +1,3 @@
-import * as angular from 'angular';
 import * as utils from './utils';
 
 function parseSelector(selector: string) {

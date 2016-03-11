@@ -1,5 +1,3 @@
-import * as angular from 'angular';
-
 let bootstrapped = false;
 
 export function bootstrap(ngModule, component) {
