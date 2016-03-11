@@ -6,7 +6,7 @@ import * as utils from './utils';
 let map = {};
 const states = {};
 
-export function bootstrap(ngModule, target, parentState?: string) {
+export function bootstrap(ngModule, target, parentState?: any) {
 	const annotations = target.__annotations__;
 	const component = annotations.component;
 	const name = camelcase(component.selector);
@@ -97,17 +97,37 @@ export function bootstrap(ngModule, target, parentState?: string) {
 			const name = route.name || route.as;
 			const routerAnnotations = route.component.__annotations__ && route.component.__annotations__.router;
 
-			if (route.component.name !== component.name) {
-				bootstrap(ngModule, route.component, name);
-			}
-
-			cmpStates.push(name);
-			states[name] = {
+			const state: any = {
+				name,
 				url: route.path,
 				controller: route.component.name,
-				template: `<${map[route.component.name]}></${map[route.component.name]}>`,
 				isDefault: route.useAsDefault === true
-			};
+			}
+
+			// Bootstrap the route component if it's not the same as the target component
+			if (route.component.name !== component.name) {
+				bootstrap(ngModule, route.component, state);
+			}
+
+			// If the url ends with `/...` this is a non-terminal route and thus is abstract.
+			if (state.url.substr(-4) === '/...') {
+				state.url = state.url.substr(0, state.url.length - 4);
+				state.abstract = true;
+			}
+
+			// Set the `parent` property if the parent is a non-terminal route
+			if (parentState && parentState.url && parentState.url.substr(-4) === '/...') {
+				state.parent = parentState.name;
+			}
+
+			// Set the template after we are sure the component has been bootstrapped
+			state.template = `<${map[route.component.name]}></${map[route.component.name]}>`;
+
+			// Push the state to the component states
+			cmpStates.push(state.name);
+
+			// Keep track of all the application states
+			states[name] = state;
 
 			// Attach CanActivate router hook
 			if (routerAnnotations && routerAnnotations.canActivate) {
@@ -142,10 +162,6 @@ export function bootstrap(ngModule, target, parentState?: string) {
 				states[name].resolve = {
 					routerCanActivate: hook
 				};
-			}
-
-			if (parentState) {
-				states[name].parent = parentState;
 			}
 		});
 
