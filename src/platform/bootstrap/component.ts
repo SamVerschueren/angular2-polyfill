@@ -48,6 +48,9 @@ export function bootstrap(ngModule, target, parentState?: any) {
 				controllerAs: component.exportAs || name,
 				transclude: true,
 				compile: () => {
+					// Prepend all the style elements to the `head` dom element
+					styleElements.forEach(el => headEl.prepend(el));
+
 					return {
 						pre: (scope, el) => {
 							// Bind the hosts
@@ -58,9 +61,6 @@ export function bootstrap(ngModule, target, parentState?: any) {
 								const init = $compile(`<div ng-init="${name}.ngOnInit();"></div>`)(scope);
 								el.append(init);
 							}
-
-							// Prepend all the style elements to the `head` dom element
-							styleElements.forEach(el => headEl.prepend(el));
 
 							scope.$on('$destroy', () => {
 								// Remove all the style elements when destroying the directive
