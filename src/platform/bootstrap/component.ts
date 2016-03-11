@@ -95,6 +95,7 @@ export function bootstrap(ngModule, target, parentState?: string) {
 
 		annotations.routes.forEach(route => {
 			const name = route.name || route.as;
+			const routerAnnotations = route.component.__annotations__ && route.component.__annotations__.router;
 
 			if (route.component.name !== component.name) {
 				bootstrap(ngModule, route.component, name);
@@ -109,19 +110,19 @@ export function bootstrap(ngModule, target, parentState?: string) {
 			};
 
 			// Attach CanActivate router hook
-			if (annotations.router && annotations.router.canActivate) {
+			if (routerAnnotations && routerAnnotations.canActivate) {
 				const hook: any[] = ['Router', '$state', '$stateParams'];
 
-				if (Object.keys(annotations.router.canActivate.prototype).length > 0) {
-					if (!annotations.router.canActivate.prototype.routerCanActivate) {
+				if (Object.keys(routerAnnotations.canActivate.prototype).length > 0) {
+					if (!routerAnnotations.canActivate.prototype.routerCanActivate) {
 						throw new Error('@CanActivate class does not implement the `CanActivate` interface.');
 					}
 
-					hook.push(utils.bootstrapHelper(ngModule, annotations.router.canActivate));
+					hook.push(utils.bootstrapHelper(ngModule, routerAnnotations.canActivate));
 				}
 
 				hook.push((router: Router, $state, $stateParams, handler) => {
-					const fn: Function = handler ? handler.routerCanActivate : annotations.router.canActivate;
+					const fn: Function = handler ? handler.routerCanActivate : routerAnnotations.canActivate;
 
 					// Generate instructions for the previous and next state
 					return Promise.all([
