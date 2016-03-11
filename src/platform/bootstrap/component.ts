@@ -100,7 +100,6 @@ export function bootstrap(ngModule, target, parentState?: any) {
 			const state: any = {
 				name,
 				url: route.path,
-				controller: route.component.name,
 				isDefault: route.useAsDefault === true
 			}
 
