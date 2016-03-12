@@ -44,7 +44,7 @@ gulp.task('cp', () => {
 });
 
 gulp.task('declarations', () => {
-	var project = ts.createProject('tsconfig.json', { outFile: 'angular2-polyfill.js' });
+	var project = ts.createProject('tsconfig.json', { outFile: 'angular2-polyfill.js'});
 	var tsResult = project.src()
 		.pipe(ts(project));
 	return tsResult.dts.pipe(gulp.dest('bundles'))
