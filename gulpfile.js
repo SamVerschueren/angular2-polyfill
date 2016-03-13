@@ -30,23 +30,22 @@ function bundle(buildConfig, moduleName, outputFile, outputConfig) {
 }
 
 gulp.task('bundle', ['cp'], () => {
-	return bundle(bundleConfig, NG2_POLYFILL_BUNDLE_CONTENT, './bundles/angular2-polyfill.js', { sourceMaps: true })
+	return bundle(bundleConfig, NG2_POLYFILL_BUNDLE_CONTENT, './bundles/angular2-polyfill.js', {sourceMaps: true})
 		.then(() => del('angular2-polyfill'));
 });
 
 gulp.task('cp', () => {
 	const streams = [];
 	streams.push(gulp.src('*.js').pipe(gulp.dest('angular2-polyfill')));
-	streams.push(gulp.src('**/*.js', { cwd: 'platform' }).pipe(gulp.dest('angular2-polyfill/platform')));
-	streams.push(gulp.src('**/*.js', { cwd: 'src' }).pipe(gulp.dest('angular2-polyfill/src')));
+	streams.push(gulp.src('**/*.js', {cwd: 'platform'}).pipe(gulp.dest('angular2-polyfill/platform')));
+	streams.push(gulp.src('**/*.js', {cwd: 'src'}).pipe(gulp.dest('angular2-polyfill/src')));
 
 	return merge(streams);
 });
 
 gulp.task('declarations', () => {
-	var project = ts.createProject('tsconfig.json', { outFile: 'angular2-polyfill.js'});
-	var tsResult = project.src()
+	const project = ts.createProject('tsconfig.json', {outFile: 'angular2-polyfill.js'});
+	const tsResult = project.src()
 		.pipe(ts(project));
 	return tsResult.dts.pipe(gulp.dest('bundles'))
-
 });
