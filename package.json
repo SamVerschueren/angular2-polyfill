@@ -12,18 +12,21 @@
   "main": false,
   "scripts": {
     "postinstall": "npm run typings install",
-    "prepublish": "npm run compile",
+    "prepublish": "npm run compile && gulp bundle",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "typings": "typings",
     "link": "jspm link npm:angular2-polyfill@dev -y"
   },
   "dependencies": {
-    "camelcase": "^2.0.1",
-    "dot-prop": "^2.2.0"
+    "camelcase": "^2.1.1",
+    "dot-prop": "^2.4.0"
   },
   "devDependencies": {
-    "systemjs-builder": "^0.15.12",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "merge2": "^1.0.1",
+    "systemjs-builder": "^0.15.13",
     "typescript": "^1.7.5",
     "typings": "^0.6.8"
   }

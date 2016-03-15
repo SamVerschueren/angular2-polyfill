@@ -18,6 +18,7 @@ const bundleConfig = {
 	paths: {
 		'dot-prop': path.join(__dirname, '/node_modules/dot-prop/index.js'),
 		'camelcase': path.join(__dirname, '/node_modules/camelcase/index.js'),
+		'is-obj': path.join(__dirname, '/node_modules/is-obj/index.js'),
 		'*': '*.js'
 	}
 };
