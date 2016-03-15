@@ -21,11 +21,6 @@
     "link": "cd angular2-polyfill && jspm link npm:angular2-polyfill@dev -y",
     "tsd-gen": "tsc -p angular2-polyfill --outFile angular2-polyfill/bundles/angular2-polyfill.js --module system -d --moduleResolution classic --rootDir \"./\""
   },
-  "dependencies": {
-    "camelcase": "^2.1.1",
-    "decamelize": "^1.2.0",
-    "dot-prop": "^2.4.0"
-  },
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-json-editor": "^2.2.1",

@@ -1,9 +1,9 @@
 'use strict';
 const path = require('path');
 const gulp = require('gulp');
-const merge = require('merge2');
 const Builder = require('systemjs-builder');
-const ts = require('gulp-typescript');
+const jeditor = require('gulp-json-editor');
+const pkg = require('./package.json');
 
 const ANGULAR2_POLYFILL_BUNDLE_CONFIG = [
 	'angular2-polyfill/core',
@@ -34,11 +34,12 @@ gulp.task('bundle', () => {
 	return bundle(bundleConfig, NG2_POLYFILL_BUNDLE_CONTENT, './angular2-polyfill/bundles/angular2-polyfill.js', {sourceMaps: true});
 });
 
-gulp.task('typedefs', () => {
-	const project = ts.createProject('tsconfig.json', {outFile: 'angular2-polyfill.js'});
-	const tsResult = project.src()
-		.pipe(ts(project));
-	return tsResult.dts.pipe(gulp.dest('./angular2-polyfill/bundles'))
+gulp.task('version', () => {
+	const cwd = 'angular2-polyfill';
+
+	return gulp.src('package.json', {cwd})
+		.pipe(jeditor({version: pkg.version}))
+		.pipe(gulp.dest('.', {cwd}));
 });
 
-gulp.task('build', ['bundle', 'typedefs']);
+gulp.task('build', ['bundle', 'version']);
