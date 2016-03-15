@@ -3,6 +3,7 @@
   "ambientDependencies": {
     "angular": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular.d.ts#1c4a34873c9e70cce86edd0e61c559e43dfa5f75",
     "camelcase": "github:DefinitelyTyped/DefinitelyTyped/camelcase/camelcase.d.ts#47f676c60034918529f22b80fc5a4dab873bd189",
+    "decamelize": "github:DefinitelyTyped/DefinitelyTyped/decamelize/decamelize.d.ts#e1bf187e0877662d58712b14c3c14fecfd4ea4cc",
     "dot-prop": "github:DefinitelyTyped/DefinitelyTyped/dot-prop/dot-prop.d.ts#8b515b23637d52a56741bca9a6e67d42ff0422df",
     "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#4de74cb527395c13ba20b438c3a7a419ad931f1c",
     "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#470954c4f427e0805a2d633636a7c6aa7170def8"

@@ -1,4 +1,5 @@
 import * as camelcase from 'camelcase';
+import * as decamelize from 'decamelize';
 import {Router} from '../../router/router';
 import * as utils from './utils';
 
@@ -8,7 +9,7 @@ const states = {};
 export function bootstrap(ngModule, target, parentState?: any) {
 	const annotations = target.__annotations__;
 	const component = annotations.component;
-	const name = camelcase(component.selector);
+	const name = camelcase(component.selector || target.name);
 	const styleElements: any[] = [];
 	const headEl = angular.element(document).find('head');
 
@@ -16,7 +17,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 		return name;
 	}
 
-	map[target.name] = component.selector;
+	map[target.name] = decamelize(component.selector || target.name);
 
 	// Bootstrap providers, directives and pipes
 	(component.providers || []).forEach(provider => utils.bootstrapHelper(ngModule, provider));
@@ -57,7 +58,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 
 							if (target.prototype.ngOnInit) {
 								// Call the `ngOnInit` lifecycle hook
-								const init = $compile(`<div ng-init="${name}.ngOnInit();"></div>`)(scope);
+								const init = $compile(`<div ng-init="${directive.controllerAs}.ngOnInit();"></div>`)(scope);
 								el.append(init);
 							}
 

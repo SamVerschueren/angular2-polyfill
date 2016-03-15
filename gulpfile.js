@@ -17,8 +17,9 @@ const NG2_POLYFILL_BUNDLE_CONTENT = ANGULAR2_POLYFILL_BUNDLE_CONFIG.join(' + ');
 const bundleConfig = {
 	paths: {
 		'dot-prop': path.join(__dirname, '/node_modules/dot-prop/index.js'),
-		'camelcase': path.join(__dirname, '/node_modules/camelcase/index.js'),
 		'is-obj': path.join(__dirname, '/node_modules/is-obj/index.js'),
+		'camelcase': path.join(__dirname, '/node_modules/camelcase/index.js'),
+		'decamelize': path.join(__dirname, '/node_modules/decamelize/index.js'),
 		'*': '*.js'
 	}
 };
