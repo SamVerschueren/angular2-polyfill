@@ -159,7 +159,7 @@ export function parseHosts(hostBindings: {string: string}[]) {
 	return result;
 }
 
-export function bindHostBindings(scope, el: angular.IRootElementService, hostBindings: any, controllerAs: string = 'ctrl') {
+export function bindHostBindings(scope, el: angular.IRootElementService, hostBindings: any, controllerAs: string = '$ctrl') {
 	// Handle attributes
 	Object.keys(hostBindings.attrs).forEach(attribute => {
 		el.attr(attribute, hostBindings.attrs[attribute]);
