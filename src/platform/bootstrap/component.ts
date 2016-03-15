@@ -68,7 +68,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 
 								if (target.prototype.ngOnDestroy) {
 									// Call the `ngOnDestroy` lifecycle hook
-									scope[name].ngOnDestroy();
+									scope[directive.controllerAs].ngOnDestroy();
 								}
 							});
 						}
