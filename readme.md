@@ -38,14 +38,14 @@ export class AppComponent {
 ### HomeComponent
 
 The `HomeComponent` simply renders the title defined in the class. Please note that in the background, we use the `controllerAs` syntax. The value of this property
-is the camelCase value of the `selector` of the component. The following content is stored in `components/home/home.component.ts`.
+is consistent with the Angular 1.5 [component](https://docs.angularjs.org/guide/component) value. The following content is stored in `components/home/home.component.ts`.
 
 ```ts
 import {Component} from 'angular2-polyfill/core'
 
 @Component({
     selector: 'home',
-    template: '<h1>{{ home.title }}</h1>',
+    template: '<h1>{{ $ctrl.title }}</h1>',
 	styles: [`
 		h1 {
 			color: red;

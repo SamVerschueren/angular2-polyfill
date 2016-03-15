@@ -214,7 +214,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
         scope: {},
         bindToController: {},
         controller: target.name,
-        controllerAs: component.exportAs || name,
+        controllerAs: component.exportAs || '$ctrl',
         transclude: true,
         compile: function() {
           styleElements.forEach(function(el) {
@@ -355,7 +355,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
         scope: {},
         bindToController: {},
         controller: target.name,
-        controllerAs: 'ctrl',
+        controllerAs: '$ctrl',
         link: function(scope, el) {
           return utils.bindHostBindings(scope, el, hostBindings);
         }

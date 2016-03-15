@@ -36,7 +36,7 @@ export function bootstrap(ngModule, target) {
 				scope: {},
 				bindToController: {},
 				controller: target.name,
-				controllerAs: 'ctrl',
+				controllerAs: '$ctrl',
 				link: (scope, el) => utils.bindHostBindings(scope, el, hostBindings)
 			};
 

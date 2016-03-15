@@ -44,7 +44,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 				scope: {},
 				bindToController: {},
 				controller: target.name,
-				controllerAs: component.exportAs || name,
+				controllerAs: component.exportAs || '$ctrl',
 				transclude: true,
 				compile: () => {
 					// Prepend all the style elements to the `head` dom element
