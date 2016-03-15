@@ -3,12 +3,14 @@ export function bootstrap(ngModule, target) {
 
 	ngModule
 		.filter(pipe.name, () => {
-			if (pipe.pure === false) {
-				const instance = new target();
-				return instance.transform;
-			}
+			return function(value, ...args: any[]) {
+				if (pipe.pure === false) {
+					const instance = new target();
+					return instance.transform(value, args);
+				}
 
-			return target.prototype.transform;
+				return target.prototype.transform(value, args);
+			}
 		});
 
 	return pipe.name;
