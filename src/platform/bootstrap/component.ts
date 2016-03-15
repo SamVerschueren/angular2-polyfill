@@ -17,7 +17,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 		return name;
 	}
 
-	map[target.name] = decamelize(component.selector || target.name);
+	map[target.name] = decamelize(component.selector || target.name, '-');
 
 	// Bootstrap providers, directives and pipes
 	(component.providers || []).forEach(provider => utils.bootstrapHelper(ngModule, provider));
