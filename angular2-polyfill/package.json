@@ -1,0 +1,17 @@
+{
+  "name": "angular2-polyfill",
+  "version": "0.0.17",
+  "description": "Angular2 polyfill for Angular1",
+  "license": "MIT",
+  "repository": "SamVerschueren/angular2-polyfill",
+  "author": {
+    "name": "Sam Verschueren",
+    "email": "sam.verschueren@gmail.com",
+    "url": "github.com/SamVerschueren"
+  },
+  "main": false,
+  "dependencies": {
+    "camelcase": "^2.1.1",
+    "dot-prop": "^2.4.0"
+  }
+}

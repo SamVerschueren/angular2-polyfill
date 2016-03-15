@@ -1,4 +1,5 @@
 System.registerDynamic("angular2-polyfill/src/http/http.service", ["../../core"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -45,12 +46,13 @@ System.registerDynamic("angular2-polyfill/src/http/http.service", ["../../core"]
     };
     Http = __decorate([__param(0, core_1.Inject('$http'))], Http);
     return Http;
-  })();
+  }());
   exports.Http = Http;
   return module.exports;
 });
 
 System.registerDynamic("angular2-polyfill/src/http/providers", ["./http.service"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -61,6 +63,7 @@ System.registerDynamic("angular2-polyfill/src/http/providers", ["./http.service"
 });
 
 System.registerDynamic("angular2-polyfill/http", ["./src/http/http.service", "./src/http/providers"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -73,6 +76,7 @@ System.registerDynamic("angular2-polyfill/http", ["./src/http/http.service", "./
 });
 
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/core", [], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -128,7 +132,7 @@ System.registerDynamic("camelcase", [], true, function($__require, exports, modu
     var isLastCharLower = false;
     for (var i = 0; i < str.length; i++) {
       var c = str.charAt(i);
-      if (isLastCharLower && c.toUpperCase() === c) {
+      if (isLastCharLower && (/[a-zA-Z]/).test(c) && c.toUpperCase() === c) {
         str = str.substr(0, i) + '-' + str.substr(i);
         isLastCharLower = false;
         i++;
@@ -168,6 +172,7 @@ System.registerDynamic("camelcase", [], true, function($__require, exports, modu
 });
 
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["camelcase", "./utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -312,6 +317,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
 });
 
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", ["./utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -364,6 +370,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
 });
 
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/pipe", [], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -384,6 +391,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/pipe", [], true
 });
 
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["./utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -400,6 +408,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["
 });
 
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camelcase", "dot-prop", "./component", "./directive", "./pipe", "./injectable"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -601,6 +610,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
 });
 
 System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/core", "./bootstrap/utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -622,6 +632,7 @@ System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/c
 });
 
 System.registerDynamic("angular2-polyfill/platform/upgrade", ["../src/platform/upgrade"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -632,6 +643,7 @@ System.registerDynamic("angular2-polyfill/platform/upgrade", ["../src/platform/u
 });
 
 System.registerDynamic("angular2-polyfill/src/router/decorators/RouteConfig", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -647,6 +659,7 @@ System.registerDynamic("angular2-polyfill/src/router/decorators/RouteConfig", ["
 });
 
 System.registerDynamic("angular2-polyfill/src/router/lifecycle/lifecycle_annotations", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -661,13 +674,8 @@ System.registerDynamic("angular2-polyfill/src/router/lifecycle/lifecycle_annotat
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/router/interfaces", [], false, function($__require, $__exports, $__module) {
-  var _retrieveGlobal = System.get("@@global-helpers").prepareGlobal($__module.id, null, null);
-  (function() {})();
-  return _retrieveGlobal();
-});
-
 System.registerDynamic("angular2-polyfill/src/router/router", ["../../core", "./instruction"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -716,12 +724,13 @@ System.registerDynamic("angular2-polyfill/src/router/router", ["../../core", "./
     };
     Router = __decorate([__param(0, core_1.Inject('$state'))], Router);
     return Router;
-  })();
+  }());
   exports.Router = Router;
   return module.exports;
 });
 
 System.registerDynamic("angular2-polyfill/src/core/decorators/Component", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -737,6 +746,7 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Component", ["../.
 });
 
 System.registerDynamic("angular2-polyfill/src/core/decorators/Directive", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -752,6 +762,7 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Directive", ["../.
 });
 
 System.registerDynamic("angular2-polyfill/src/core/decorators/Inject", [], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -772,6 +783,7 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Inject", [], true,
 });
 
 System.registerDynamic("angular2-polyfill/src/core/decorators/Injectable", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -787,6 +799,7 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Injectable", ["../
 });
 
 System.registerDynamic("angular2-polyfill/src/core/decorators/Input", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -802,6 +815,7 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Input", ["../../ut
 });
 
 System.registerDynamic("angular2-polyfill/src/core/decorators/Output", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -816,27 +830,33 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Output", ["../../u
   return module.exports;
 });
 
-System.registerDynamic("dot-prop", [], true, function($__require, exports, module) {
+System.registerDynamic("is-obj", [], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
-  function isObjOrFn(x) {
-    return (typeof x === 'object' || typeof x === 'function') && x !== null;
-  }
+  module.exports = function(x) {
+    var type = typeof x;
+    return x !== null && (type === 'object' || type === 'function');
+  };
+  return module.exports;
+});
+
+System.registerDynamic("dot-prop", ["is-obj"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var isObj = $__require('is-obj');
   module.exports.get = function(obj, path) {
-    if (!isObjOrFn(obj) || typeof path !== 'string') {
+    if (!isObj(obj) || typeof path !== 'string') {
       return obj;
     }
-    var pathArr = path.split('.');
+    var pathArr = getPathSegments(path);
     for (var i = 0; i < pathArr.length; i++) {
-      var p = pathArr[i];
-      while (p[p.length - 1] === '\\') {
-        p = p.slice(0, -1) + '.';
-        p += pathArr[++i];
-      }
-      obj = obj[p];
+      obj = obj[pathArr[i]];
       if (obj === undefined) {
         break;
       }
@@ -844,17 +864,13 @@ System.registerDynamic("dot-prop", [], true, function($__require, exports, modul
     return obj;
   };
   module.exports.set = function(obj, path, value) {
-    if (!isObjOrFn(obj) || typeof path !== 'string') {
+    if (!isObj(obj) || typeof path !== 'string') {
       return;
     }
-    var pathArr = path.split('.');
+    var pathArr = getPathSegments(path);
     for (var i = 0; i < pathArr.length; i++) {
       var p = pathArr[i];
-      while (p[p.length - 1] === '\\') {
-        p = p.slice(0, -1) + '.';
-        p += pathArr[++i];
-      }
-      if (!isObjOrFn(obj[p])) {
+      if (!isObj(obj[p])) {
         obj[p] = {};
       }
       if (i === pathArr.length - 1) {
@@ -863,10 +879,51 @@ System.registerDynamic("dot-prop", [], true, function($__require, exports, modul
       obj = obj[p];
     }
   };
+  module.exports.delete = function(obj, path) {
+    if (!isObj(obj) || typeof path !== 'string') {
+      return;
+    }
+    var pathArr = getPathSegments(path);
+    for (var i = 0; i < pathArr.length; i++) {
+      var p = pathArr[i];
+      if (i === pathArr.length - 1) {
+        delete obj[p];
+        return;
+      }
+      obj = obj[p];
+    }
+  };
+  module.exports.has = function(obj, path) {
+    if (!isObj(obj) || typeof path !== 'string') {
+      return false;
+    }
+    var pathArr = getPathSegments(path);
+    for (var i = 0; i < pathArr.length; i++) {
+      obj = obj[pathArr[i]];
+      if (obj === undefined) {
+        return false;
+      }
+    }
+    return true;
+  };
+  function getPathSegments(path) {
+    var pathArr = path.split('.');
+    var parts = [];
+    for (var i = 0; i < pathArr.length; i++) {
+      var p = pathArr[i];
+      while (p[p.length - 1] === '\\') {
+        p = p.slice(0, -1) + '.';
+        p += pathArr[++i];
+      }
+      parts.push(p);
+    }
+    return parts;
+  }
   return module.exports;
 });
 
 System.registerDynamic("angular2-polyfill/src/utils", ["dot-prop"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -883,6 +940,7 @@ System.registerDynamic("angular2-polyfill/src/utils", ["dot-prop"], true, functi
 });
 
 System.registerDynamic("angular2-polyfill/src/core/decorators/Pipe", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -898,6 +956,7 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Pipe", ["../../uti
 });
 
 System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Component", "./decorators/Directive", "./decorators/Inject", "./decorators/Injectable", "./decorators/Input", "./decorators/Output", "./decorators/Pipe"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -920,6 +979,7 @@ System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Compone
 });
 
 System.registerDynamic("angular2-polyfill/core", ["./src/core/core"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -934,6 +994,7 @@ System.registerDynamic("angular2-polyfill/core", ["./src/core/core"], true, func
 });
 
 System.registerDynamic("angular2-polyfill/src/router/instruction", ["../../core"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -965,17 +1026,18 @@ System.registerDynamic("angular2-polyfill/src/router/instruction", ["../../core"
     };
     RouteParams = __decorate([__param(0, core_1.Inject('$stateParams'))], RouteParams);
     return RouteParams;
-  })();
+  }());
   exports.RouteParams = RouteParams;
   var Instruction = (function() {
     function Instruction() {}
     return Instruction;
-  })();
+  }());
   exports.Instruction = Instruction;
   return module.exports;
 });
 
 System.registerDynamic("angular2-polyfill/src/router/providers", ["./router", "./instruction"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
@@ -986,16 +1048,12 @@ System.registerDynamic("angular2-polyfill/src/router/providers", ["./router", ".
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/router", ["./src/router/router", "./src/router/instruction", "./src/router/decorators/RouteConfig", "./src/router/lifecycle/lifecycle_annotations", "./src/router/interfaces", "./src/router/providers"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/router", ["./src/router/router", "./src/router/instruction", "./src/router/decorators/RouteConfig", "./src/router/lifecycle/lifecycle_annotations", "./src/router/providers"], true, function($__require, exports, module) {
+  "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
-  }
   var router_1 = $__require('./src/router/router');
   exports.Router = router_1.Router;
   var instruction_1 = $__require('./src/router/instruction');
@@ -1006,7 +1064,6 @@ System.registerDynamic("angular2-polyfill/router", ["./src/router/router", "./sr
   exports.RouteConfig = RouteConfig_1.RouteConfig;
   var lifecycle_annotations_1 = $__require('./src/router/lifecycle/lifecycle_annotations');
   exports.CanActivate = lifecycle_annotations_1.CanActivate;
-  __export($__require('./src/router/interfaces'));
   var providers_1 = $__require('./src/router/providers');
   exports.ROUTER_PROVIDERS = providers_1.ROUTER_PROVIDERS;
   return module.exports;
