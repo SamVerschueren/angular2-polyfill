@@ -42,4 +42,9 @@ gulp.task('version', () => {
 		.pipe(gulp.dest('.', {cwd}));
 });
 
-gulp.task('build', ['bundle', 'version']);
+gulp.task('readme', () => {
+	return gulp.src('readme.md')
+		.pipe(gulp.dest('angular2-polyfill'));
+});
+
+gulp.task('build', ['bundle', 'version', 'readme']);

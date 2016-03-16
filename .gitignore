@@ -5,6 +5,11 @@ typings
 **/*.js
 **/*.js.map
 **/*.d.ts
+
+# Copied by the build process
+angular2-polyfill/readme.md
+
+# Do not ignore these files
 !gulpfile.js
 !angular2-polyfill/bundles/**/*.js
 !angular2-polyfill/bundles/**/*.d.ts
