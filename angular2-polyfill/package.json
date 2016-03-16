@@ -11,6 +11,9 @@
   },
   "typings": "bundles/angular2-polyfill.d.ts",
   "main": false,
+  "scripts": {
+    "prepublish": "cd .. && npm run build"
+  },
   "dependencies": {
     "camelcase": "^2.1.1",
     "decamelize": "^1.2.0",

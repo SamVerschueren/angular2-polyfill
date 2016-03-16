@@ -11,8 +11,7 @@
     "url": "github.com/SamVerschueren"
   },
   "scripts": {
-    "postinstall": "npm run typings install",
-    "prepublish": "npm run pub",
+    "postinstall": "npm run typings install && cd angular2-polyfill && npm install",
     "build": "npm run compile && npm run tsd-gen && gulp build",
     "compile": "tsc -p ./angular2-polyfill",
     "watch": "tsc -watch -p ./angular2-polyfill",
