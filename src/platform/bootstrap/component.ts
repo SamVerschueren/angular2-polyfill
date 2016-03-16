@@ -54,7 +54,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 					return {
 						pre: (scope, el) => {
 							// Bind the hosts
-							utils.bindHostBindings(scope, el, hostBindings, component.exportAs || name);
+							utils.bindHostBindings(scope, el, hostBindings, component.controllerAs);
 
 							if (target.prototype.ngOnInit) {
 								// Call the `ngOnInit` lifecycle hook
