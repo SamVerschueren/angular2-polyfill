@@ -11,6 +11,12 @@
 $ npm install --save angular2-polyfill
 ```
 
+Or with `jspm`
+
+```
+$ jspm install npm:angular2-polyfill
+```
+
 
 ## Usage
 
@@ -67,6 +73,7 @@ keep the other component as they are now and refactor them in the future.
 ```ts
 import * as angular from 'angular';
 import 'angular-ui-router';
+import 'reflect-metadata';
 import {bootstrap} from 'angular2-polyfill/platform/upgrade';
 import {AppComponent} from './components/app/app.component';
 
@@ -130,7 +137,14 @@ We are using SystemJS as module loader. Feel free to use something else.
 
 ## Examples
 
+### GitHub
+
 - [Tour of Heroes](https://github.com/SamVerschueren/angular2-polyfill-heroes) - Tour of Heroes implementation
+
+### Plunks
+
+- [Tour of Heroes](https://plnkr.co/edit/tV8gO6cPCJlcu49qAwoN) - Tour of Heroes
+- [Routing](http://plnkr.co/edit/AdhtnTfA8pnAeFRk2qDE) - Routing example
 
 
 ## License
