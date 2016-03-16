@@ -3,7 +3,6 @@ const path = require('path');
 const gulp = require('gulp');
 const merge = require('merge2');
 const Builder = require('systemjs-builder');
-const ts = require('gulp-typescript');
 
 const ANGULAR2_POLYFILL_BUNDLE_CONFIG = [
 	'angular2-polyfill/core',
@@ -33,11 +32,4 @@ gulp.task('bundle', () => {
 	return bundle(bundleConfig, NG2_POLYFILL_BUNDLE_CONTENT, './angular2-polyfill/bundles/angular2-polyfill.js', {sourceMaps: true});
 });
 
-gulp.task('typedefs', () => {
-	const project = ts.createProject('tsconfig.json', {outFile: 'angular2-polyfill.js'});
-	const tsResult = project.src()
-		.pipe(ts(project));
-	return tsResult.dts.pipe(gulp.dest('./angular2-polyfill/bundles'))
-});
-
-gulp.task('build', ['bundle', 'typedefs']);
+gulp.task('build', ['bundle']);

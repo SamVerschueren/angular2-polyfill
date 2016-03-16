@@ -1,34 +1,33 @@
 {
-	"name": "angular2-polyfill",
-	"version": "0.0.17",
-	"description": "Angular2 polyfill for Angular1",
-	"license": "MIT",
-	"repository": "SamVerschueren/angular2-polyfill",
-	"private": true,
-	"author": {
-		"name": "Sam Verschueren",
-		"email": "sam.verschueren@gmail.com",
-		"url": "github.com/SamVerschueren"
-	},
-	"scripts": {
-		"postinstall": "npm run typings install",
-		"prepublish": "npm run compile && gulp bundle",
-		"compile": "tsc -p ./angular2-polyfill",
-		"watch": "tsc -watch -p ./angular2-polyfill",
-		"typings": "cd angular2-polyfill && typings",
-		"link": "../node_modules/.bin/jspm link npm:angular2-polyfill@dev -y",
-		"defs": "tsc -p angular2-polyfill --outFile angular2-polyfill/bundles/angular2-polyfill.js --outDir bundles --module system -d --moduleResolution classic --rootDir \"./\""
-	},
-	"dependencies": {
-		"camelcase": "^2.1.1",
-		"dot-prop": "^2.4.0"
-	},
-	"devDependencies": {
-		"gulp": "^3.9.1",
-		"gulp-typescript": "^2.12.1",
-		"merge2": "^1.0.1",
-		"systemjs-builder": "^0.15.12",
-		"typescript": "^1.8.7",
-		"typings": "^0.7.9"
-	}
+  "name": "angular2-polyfill",
+  "version": "0.0.17",
+  "description": "Angular2 polyfill for Angular1",
+  "license": "MIT",
+  "repository": "SamVerschueren/angular2-polyfill",
+  "private": true,
+  "author": {
+    "name": "Sam Verschueren",
+    "email": "sam.verschueren@gmail.com",
+    "url": "github.com/SamVerschueren"
+  },
+  "scripts": {
+    "postinstall": "npm run typings install",
+    "prepublish": "npm run compile && gulp bundle && npm run tsd",
+    "compile": "tsc -p ./angular2-polyfill",
+    "watch": "tsc -watch -p ./angular2-polyfill",
+    "typings": "cd angular2-polyfill && typings",
+    "link": "../node_modules/.bin/jspm link npm:angular2-polyfill@dev -y",
+    "tsd": "tsc -p angular2-polyfill --outFile angular2-polyfill/bundles/angular2-polyfill.js --module system -d --moduleResolution classic --rootDir \"./\""
+  },
+  "dependencies": {
+    "camelcase": "^2.1.1",
+    "dot-prop": "^2.4.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "merge2": "^1.0.1",
+    "systemjs-builder": "^0.15.12",
+    "typescript": "^1.8.7",
+    "typings": "^0.7.9"
+  }
 }
