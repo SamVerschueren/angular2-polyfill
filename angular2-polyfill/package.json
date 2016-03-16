@@ -9,6 +9,7 @@
     "email": "sam.verschueren@gmail.com",
     "url": "github.com/SamVerschueren"
   },
+  "typings": "bundles/angular2-polyfill.d.ts",
   "main": false,
   "dependencies": {
     "camelcase": "^2.1.1",
