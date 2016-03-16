@@ -12,12 +12,12 @@
   },
   "scripts": {
     "postinstall": "npm run typings install",
-    "prepublish": "npm run compile && gulp bundle && npm run tsd",
+    "prepublish": "npm run compile && gulp bundle && npm run tsd-gen",
     "compile": "tsc -p ./angular2-polyfill",
     "watch": "tsc -watch -p ./angular2-polyfill",
     "typings": "cd angular2-polyfill && typings",
     "link": "../node_modules/.bin/jspm link npm:angular2-polyfill@dev -y",
-    "tsd": "tsc -p angular2-polyfill --outFile angular2-polyfill/bundles/angular2-polyfill.js --module system -d --moduleResolution classic --rootDir \"./\""
+    "tsd-gen": "tsc -p angular2-polyfill --outFile angular2-polyfill/bundles/angular2-polyfill.js --module system -d --moduleResolution classic --rootDir \"./\""
   },
   "dependencies": {
     "camelcase": "^2.1.1",
