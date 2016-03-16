@@ -6,4 +6,4 @@ typings
 **/*.js.map
 **/*.d.ts
 !gulpfile.js
-!bundles/**/*.js
+!angular2-polyfill/bundles/**/*.js

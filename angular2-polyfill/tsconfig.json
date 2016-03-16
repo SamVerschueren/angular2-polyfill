@@ -2,14 +2,13 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "outDir": "./angular2-polyfill",
+    "outDir": "./",
     "sourceMap": false,
     "declaration": true,
     "experimentalDecorators": true
   },
   "exclude": [
-		"node_modules",
-    "angular2-polyfill/typings/browser",
-    "angular2-polyfill/typings/browser.d.ts"
+    "typings/browser",
+    "typings/browser.d.ts"
   ]
 }
