@@ -84,7 +84,7 @@ export function bindInput(target, directive) {
 		if (Reflect.hasMetadata('design:type', target.prototype, key)) {
 			const type = Reflect.getMetadata('design:type', target.prototype, key);
 
-			if (type.name === 'String') {
+			if (type.name === 'String' || type.name === 'Number' || type.name === 'Boolean') {
 				return '@';
 			} else {
 				return '=';
