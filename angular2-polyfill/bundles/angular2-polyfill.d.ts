@@ -21,6 +21,7 @@ declare module "angular2-polyfill/src/utils" {
      * Helper functions
      */
     export function annotate(target: any, key: any, value: any): void;
+    export function toInjectorName(token: any): any;
 }
 declare module "angular2-polyfill/src/core/decorators/Component" {
     import { ComponentMetadata } from "angular2-polyfill/src/core/interfaces/ComponentMetadata";
@@ -63,6 +64,50 @@ declare module "angular2-polyfill/src/core/decorators/Pipe" {
     import { PipeMetadata } from "angular2-polyfill/src/core/interfaces/PipeMetadata";
     export function Pipe(pipe: PipeMetadata): (target: any) => void;
 }
+declare module "angular2-polyfill/src/core/interfaces/ProviderMetadata" {
+    export interface ProviderMetadata {
+        useClass?: any;
+        useValue?: any;
+        useExisting?: any;
+        useFactory?: Function;
+        deps?: any[];
+        multi?: boolean;
+    }
+}
+declare module "angular2-polyfill/src/core/functions/provide" {
+    import { Provider } from "angular2-polyfill/src/core/core";
+    import { ProviderMetadata } from "angular2-polyfill/src/core/interfaces/ProviderMetadata";
+    export function provide(token: any, options: ProviderMetadata): Provider;
+}
+declare module "angular2-polyfill/src/core/classes/provider" {
+    import { ProviderMetadata } from "angular2-polyfill/src/core/interfaces/ProviderMetadata";
+    export class Provider {
+        token: any;
+        useClass: any;
+        useValue: any;
+        useExisting: any;
+        useFactory: Function;
+        deps: any[];
+        multi: boolean;
+        constructor(token: any, options: ProviderMetadata);
+    }
+}
+declare module "angular2-polyfill/src/core/classes/opaque_token" {
+    export class OpaqueToken {
+        private _desc;
+        constructor(_desc: string);
+        toString(): string;
+    }
+}
+declare module "angular2-polyfill/src/core/classes/injector" {
+    export class Injector {
+        private _module;
+        private _injector;
+        constructor(module: ng.IModule);
+        get(token: any): {};
+        getOptional(token: any): {};
+    }
+}
 declare module "angular2-polyfill/src/core/interfaces/OnInit" {
     export interface OnInit {
         ngOnInit(): void;
@@ -86,6 +131,10 @@ declare module "angular2-polyfill/src/core/core" {
     export { Input } from "angular2-polyfill/src/core/decorators/Input";
     export { Output } from "angular2-polyfill/src/core/decorators/Output";
     export { Pipe } from "angular2-polyfill/src/core/decorators/Pipe";
+    export { provide } from "angular2-polyfill/src/core/functions/provide";
+    export { Provider } from "angular2-polyfill/src/core/classes/provider";
+    export { Injector } from "angular2-polyfill/src/core/classes/injector";
+    export { OpaqueToken } from "angular2-polyfill/src/core/classes/opaque_token";
     export { OnInit } from "angular2-polyfill/src/core/interfaces/OnInit";
     export { OnDestroy } from "angular2-polyfill/src/core/interfaces/OnDestroy";
     export { PipeTransform } from "angular2-polyfill/src/core/interfaces/PipeTransform";
@@ -210,11 +259,21 @@ declare module "angular2-polyfill/src/platform/bootstrap/component" {
 declare module "angular2-polyfill/src/platform/bootstrap/directive" {
     export function bootstrap(ngModule: any, target: any): void;
 }
+declare module "angular2-polyfill/src/platform/bootstrap/factory" {
+    export function bootstrap(ngModule: any, target: any): any;
+}
 declare module "angular2-polyfill/src/platform/bootstrap/pipe" {
+    export function bootstrap(ngModule: any, target: any): any;
+}
+declare module "angular2-polyfill/src/platform/bootstrap/value" {
     export function bootstrap(ngModule: any, target: any): any;
 }
 declare module "angular2-polyfill/src/platform/bootstrap/injectable" {
     export function bootstrap(ngModule: any, target: any): any;
+}
+declare module "angular2-polyfill/src/platform/bootstrap/provider" {
+    import { Provider } from "angular2-polyfill/src/core/core";
+    export function bootstrap(ngModule: any, provider: Provider): void;
 }
 declare module "angular2-polyfill/src/platform/bootstrap/utils" {
     export function inject(target: any): void;

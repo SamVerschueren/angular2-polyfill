@@ -119,6 +119,10 @@ We are using SystemJS as module loader. Feel free to use something else.
 
 ## Services
 
+### DI
+
+- Injector
+
 ### HTTP
 
 - Http
@@ -127,6 +131,11 @@ We are using SystemJS as module loader. Feel free to use something else.
 
 - Router
 - RouteParams
+
+
+## Functions
+
+- provide
 
 
 ## Lifecycle hooks

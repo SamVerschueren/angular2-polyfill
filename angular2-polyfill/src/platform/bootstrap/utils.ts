@@ -1,9 +1,13 @@
 import * as camelcase from 'camelcase';
 import * as dotProp from 'dot-prop';
+import {Provider} from '../../core/core';
 import {bootstrap as bootstrapComponent} from './component';
 import {bootstrap as bootstrapDirective} from './directive';
+import {bootstrap as bootstrapFactory} from './factory';
 import {bootstrap as bootstrapPipe} from './pipe';
+import {bootstrap as bootstrapValue} from './value';
 import {bootstrap as bootstrapInjectable} from './injectable';
+import {bootstrap as bootstrapProvider} from './provider';
 
 declare var Reflect;
 
@@ -52,8 +56,8 @@ function applyValueToProperties(el: angular.IRootElementService, properties: any
 }
 
 export function inject(target) {
-	var annotations = target.__annotations__ || {};
-	var injectables = [];
+	const annotations = target.__annotations__ || {};
+	const injectables = [];
 
 	if (annotations.inject) {
 		annotations.inject.forEach(function(injectable, index) {
@@ -202,9 +206,17 @@ export function bootstrapHelper(ngModule, target): any {
 			return bootstrapComponent(ngModule, target);
 		} else if (target.__annotations__.directive) {
 			return bootstrapDirective(ngModule, target);
+		} else if (target.__annotations__.factory) {
+			return bootstrapFactory(ngModule, target);
 		} else if (target.__annotations__.pipe) {
 			return bootstrapPipe(ngModule, target);
+		} else if (target.__annotations__.value) {
+			return bootstrapValue(ngModule, target);
 		}
+	}
+
+	if (target instanceof Provider) {
+		return bootstrapProvider(ngModule, target);
 	}
 
 	return bootstrapInjectable(ngModule, target);

@@ -6,6 +6,12 @@ export {Input} from './decorators/Input';
 export {Output} from './decorators/Output';
 export {Pipe} from './decorators/Pipe';
 
+export {provide} from './functions/provide';
+
+export {Provider} from './classes/provider';
+export {Injector} from './classes/injector';
+export {OpaqueToken} from './classes/opaque_token';
+
 export {OnInit} from './interfaces/OnInit';
 export {OnDestroy} from './interfaces/OnDestroy';
 

@@ -122,55 +122,6 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/core", [], true
   return module.exports;
 });
 
-System.registerDynamic("camelcase", [], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  function preserveCamelCase(str) {
-    var isLastCharLower = false;
-    for (var i = 0; i < str.length; i++) {
-      var c = str.charAt(i);
-      if (isLastCharLower && (/[a-zA-Z]/).test(c) && c.toUpperCase() === c) {
-        str = str.substr(0, i) + '-' + str.substr(i);
-        isLastCharLower = false;
-        i++;
-      } else {
-        isLastCharLower = (c.toLowerCase() === c);
-      }
-    }
-    return str;
-  }
-  module.exports = function() {
-    var str = [].map.call(arguments, function(str) {
-      return str.trim();
-    }).filter(function(str) {
-      return str.length;
-    }).join('-');
-    if (!str.length) {
-      return '';
-    }
-    if (str.length === 1) {
-      return str;
-    }
-    if (!(/[_.\- ]+/).test(str)) {
-      if (str === str.toUpperCase()) {
-        return str.toLowerCase();
-      }
-      if (str[0] !== str[0].toLowerCase()) {
-        return str[0].toLowerCase() + str.slice(1);
-      }
-      return str;
-    }
-    str = preserveCamelCase(str);
-    return str.replace(/^[_.\- ]+/, '').toLowerCase().replace(/[_.\- ]+(\w|$)/g, function(m, p1) {
-      return p1.toUpperCase();
-    });
-  };
-  return module.exports;
-});
-
 System.registerDynamic("decamelize", [], true, function($__require, exports, module) {
   "use strict";
   ;
@@ -386,6 +337,25 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
   return module.exports;
 });
 
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/factory", ["./utils"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var utils = $__require('./utils');
+  function bootstrap(ngModule, target) {
+    var annotations = target.__annotations__;
+    var factory = annotations.factory;
+    utils.inject(target);
+    var name = factory.name || target.name;
+    ngModule.factory(name, target);
+    return name;
+  }
+  exports.bootstrap = bootstrap;
+  return module.exports;
+});
+
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/pipe", ["./utils"], true, function($__require, exports, module) {
   "use strict";
   ;
@@ -420,6 +390,23 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/pipe", ["./util
   return module.exports;
 });
 
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/value", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  function bootstrap(ngModule, target) {
+    var value = target.__annotations__.value;
+    var name = value.name;
+    console.log(value);
+    ngModule.value(name, value.value);
+    return name;
+  }
+  exports.bootstrap = bootstrap;
+  return module.exports;
+});
+
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["./utils"], true, function($__require, exports, module) {
   "use strict";
   ;
@@ -428,7 +415,9 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["
       GLOBAL = this;
   var utils_1 = $__require('./utils');
   function bootstrap(ngModule, target) {
-    var name = target.name;
+    var annotations = target.__annotations__ || {};
+    var injectable = annotations.injectable || {};
+    var name = injectable.name || target.name;
     utils_1.inject(target);
     ngModule.service(name, target);
     return name;
@@ -437,7 +426,41 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camelcase", "dot-prop", "./component", "./directive", "./pipe", "./injectable"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/provider", ["../../utils", "./utils"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var utils_1 = $__require('../../utils');
+  var utils = $__require('./utils');
+  function bootstrap(ngModule, provider) {
+    var target = {};
+    var name = utils_1.toInjectorName(provider.token);
+    var inject = (provider.deps || []).map(utils_1.toInjectorName);
+    if (provider.useValue) {
+      var value = provider.useValue;
+      utils_1.annotate(target, 'value', {
+        name: name,
+        value: value
+      });
+    } else if (provider.useFactory) {
+      target = provider.useFactory;
+      utils_1.annotate(target, 'factory', {name: name});
+      utils_1.annotate(target, 'inject', inject);
+    } else if (provider.useClass) {
+      target = provider.useClass;
+      utils_1.annotate(target, 'injectable', {name: name});
+    } else if (provider.useExisting) {
+      throw new Error('Not yet implemented');
+    }
+    utils.bootstrapHelper(ngModule, target);
+  }
+  exports.bootstrap = bootstrap;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camelcase", "dot-prop", "../../core/core", "./component", "./directive", "./factory", "./pipe", "./value", "./injectable", "./provider"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -445,10 +468,14 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
       GLOBAL = this;
   var camelcase = $__require('camelcase');
   var dotProp = $__require('dot-prop');
+  var core_1 = $__require('../../core/core');
   var component_1 = $__require('./component');
   var directive_1 = $__require('./directive');
+  var factory_1 = $__require('./factory');
   var pipe_1 = $__require('./pipe');
+  var value_1 = $__require('./value');
   var injectable_1 = $__require('./injectable');
+  var provider_1 = $__require('./provider');
   function parseHostBinding(key) {
     var regex = [{
       type: 'attr',
@@ -523,7 +550,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
     function signOf(key) {
       if (Reflect.hasMetadata('design:type', target.prototype, key)) {
         var type = Reflect.getMetadata('design:type', target.prototype, key);
-        if (type.name === 'String') {
+        if (type.name === 'String' || type.name === 'Number' || type.name === 'Boolean') {
           return '@';
         } else {
           return '=';
@@ -629,9 +656,16 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
         return component_1.bootstrap(ngModule, target);
       } else if (target.__annotations__.directive) {
         return directive_1.bootstrap(ngModule, target);
+      } else if (target.__annotations__.factory) {
+        return factory_1.bootstrap(ngModule, target);
       } else if (target.__annotations__.pipe) {
         return pipe_1.bootstrap(ngModule, target);
+      } else if (target.__annotations__.value) {
+        return value_1.bootstrap(ngModule, target);
       }
+    }
+    if (target instanceof core_1.Provider) {
+      return provider_1.bootstrap(ngModule, target);
     }
     return injectable_1.bootstrap(ngModule, target);
   }
@@ -639,7 +673,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/core", "./bootstrap/utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/core", "./bootstrap/utils", "../core/core"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -647,11 +681,15 @@ System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/c
       GLOBAL = this;
   var core_1 = $__require('./bootstrap/core');
   var utils_1 = $__require('./bootstrap/utils');
+  var core_2 = $__require('../core/core');
   function bootstrap(ngModule, component, providers) {
     if (providers === void 0) {
       providers = [];
     }
     core_1.bootstrap(ngModule, component);
+    utils_1.bootstrapHelper(ngModule, core_2.provide(core_2.Injector, {useFactory: function() {
+        return new core_2.Injector(ngModule);
+      }}));
     utils_1.bootstrapHelper(ngModule, component);
     providers.forEach(function(provider) {
       return utils_1.bootstrapHelper(ngModule, provider);
@@ -860,6 +898,58 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Output", ["../../u
   return module.exports;
 });
 
+System.registerDynamic("angular2-polyfill/src/core/decorators/Pipe", ["../../utils"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var utils_1 = $__require('../../utils');
+  function Pipe(pipe) {
+    return function(target) {
+      utils_1.annotate(target, 'pipe', pipe);
+    };
+  }
+  exports.Pipe = Pipe;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/core/functions/provide", ["../core"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var core_1 = $__require('../core');
+  function provide(token, options) {
+    return new core_1.Provider(token, options);
+  }
+  exports.provide = provide;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/core/classes/provider", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var Provider = (function() {
+    function Provider(token, options) {
+      this.token = token;
+      this.useClass = options.useClass;
+      this.useValue = options.useValue;
+      this.useExisting = options.useExisting;
+      this.useFactory = options.useFactory;
+      this.deps = options.deps;
+      this.multi = options.multi;
+    }
+    return Provider;
+  }());
+  exports.Provider = Provider;
+  return module.exports;
+});
+
 System.registerDynamic("is-obj", [], true, function($__require, exports, module) {
   "use strict";
   ;
@@ -952,13 +1042,64 @@ System.registerDynamic("dot-prop", ["is-obj"], true, function($__require, export
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/utils", ["dot-prop"], true, function($__require, exports, module) {
+System.registerDynamic("camelcase", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  function preserveCamelCase(str) {
+    var isLastCharLower = false;
+    for (var i = 0; i < str.length; i++) {
+      var c = str.charAt(i);
+      if (isLastCharLower && (/[a-zA-Z]/).test(c) && c.toUpperCase() === c) {
+        str = str.substr(0, i) + '-' + str.substr(i);
+        isLastCharLower = false;
+        i++;
+      } else {
+        isLastCharLower = (c.toLowerCase() === c);
+      }
+    }
+    return str;
+  }
+  module.exports = function() {
+    var str = [].map.call(arguments, function(str) {
+      return str.trim();
+    }).filter(function(str) {
+      return str.length;
+    }).join('-');
+    if (!str.length) {
+      return '';
+    }
+    if (str.length === 1) {
+      return str;
+    }
+    if (!(/[_.\- ]+/).test(str)) {
+      if (str === str.toUpperCase()) {
+        return str.toLowerCase();
+      }
+      if (str[0] !== str[0].toLowerCase()) {
+        return str[0].toLowerCase() + str.slice(1);
+      }
+      return str;
+    }
+    str = preserveCamelCase(str);
+    return str.replace(/^[_.\- ]+/, '').toLowerCase().replace(/[_.\- ]+(\w|$)/g, function(m, p1) {
+      return p1.toUpperCase();
+    });
+  };
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/utils", ["dot-prop", "camelcase", "./core/core"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
   var dotProp = $__require('dot-prop');
+  var camelcase = $__require('camelcase');
+  var core_1 = $__require('./core/core');
   function annotate(target, key, value) {
     if (!target.__annotations__) {
       target.__annotations__ = {};
@@ -966,26 +1107,69 @@ System.registerDynamic("angular2-polyfill/src/utils", ["dot-prop"], true, functi
     dotProp.set(target.__annotations__, key, value);
   }
   exports.annotate = annotate;
+  function toInjectorName(token) {
+    if (typeof token === 'string') {
+      return token;
+    }
+    if (token instanceof core_1.OpaqueToken) {
+      return camelcase(token.toString());
+    }
+    return token.name;
+  }
+  exports.toInjectorName = toInjectorName;
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/core/decorators/Pipe", ["../../utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/core/classes/injector", ["../../utils"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
   var utils_1 = $__require('../../utils');
-  function Pipe(pipe) {
-    return function(target) {
-      utils_1.annotate(target, 'pipe', pipe);
+  var Injector = (function() {
+    function Injector(module) {
+      this._module = module;
+      this._injector = angular.injector([module.name]);
+    }
+    Injector.prototype.get = function(token) {
+      var name = utils_1.toInjectorName(token);
+      return this._injector.get(name);
     };
-  }
-  exports.Pipe = Pipe;
+    Injector.prototype.getOptional = function(token) {
+      try {
+        var name_1 = utils_1.toInjectorName(token);
+        return this._injector.get(name_1);
+      } catch (err) {
+        return null;
+      }
+    };
+    return Injector;
+  }());
+  exports.Injector = Injector;
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Component", "./decorators/Directive", "./decorators/Inject", "./decorators/Injectable", "./decorators/Input", "./decorators/Output", "./decorators/Pipe"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/core/classes/opaque_token", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var OpaqueToken = (function() {
+    function OpaqueToken(_desc) {
+      this._desc = _desc;
+    }
+    OpaqueToken.prototype.toString = function() {
+      return "Token " + this._desc;
+    };
+    return OpaqueToken;
+  }());
+  exports.OpaqueToken = OpaqueToken;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Component", "./decorators/Directive", "./decorators/Inject", "./decorators/Injectable", "./decorators/Input", "./decorators/Output", "./decorators/Pipe", "./functions/provide", "./classes/provider", "./classes/injector", "./classes/opaque_token"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -1005,6 +1189,14 @@ System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Compone
   exports.Output = Output_1.Output;
   var Pipe_1 = $__require('./decorators/Pipe');
   exports.Pipe = Pipe_1.Pipe;
+  var provide_1 = $__require('./functions/provide');
+  exports.provide = provide_1.provide;
+  var provider_1 = $__require('./classes/provider');
+  exports.Provider = provider_1.Provider;
+  var injector_1 = $__require('./classes/injector');
+  exports.Injector = injector_1.Injector;
+  var opaque_token_1 = $__require('./classes/opaque_token');
+  exports.OpaqueToken = opaque_token_1.OpaqueToken;
   return module.exports;
 });
 
