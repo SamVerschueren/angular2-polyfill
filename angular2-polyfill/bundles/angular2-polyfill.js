@@ -122,6 +122,78 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/core", [], true
   return module.exports;
 });
 
+System.registerDynamic("angular2-polyfill/src/common/pipes/async.pipe", ["../../core/core"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var core_1 = $__require('../../core/core');
+  var AsyncPipe = (function() {
+    function AsyncPipe() {}
+    AsyncPipe.objectId = function(obj) {
+      if (!obj.hasOwnProperty('__asyncFilterObjectID__')) {
+        obj.__asyncFilterObjectID__ = ++AsyncPipe.currentObjectID;
+      }
+      return obj.__asyncFilterObjectID__;
+    };
+    AsyncPipe.prototype.transform = function(input, _a) {
+      var scope = _a[0];
+      if (!input || !(input.subscribe || input.then)) {
+        return input;
+      }
+      var inputId = AsyncPipe.objectId(input);
+      if (!(inputId in AsyncPipe.subscriptions)) {
+        var subscriptionStrategy = input.subscribe && input.subscribe.bind(input) || input.success && input.success.bind(input) || input.then.bind(input);
+        AsyncPipe.subscriptions[inputId] = subscriptionStrategy(function(value) {
+          AsyncPipe.values[inputId] = value;
+          if (scope && scope.$applyAsync) {
+            scope.$applyAsync();
+          }
+        });
+      }
+      return AsyncPipe.values[inputId] || undefined;
+    };
+    AsyncPipe.currentObjectID = 0;
+    AsyncPipe.values = {};
+    AsyncPipe.subscriptions = {};
+    AsyncPipe = __decorate([core_1.Pipe({
+      name: 'async',
+      pure: false
+    })], AsyncPipe);
+    return AsyncPipe;
+  }());
+  exports.AsyncPipe = AsyncPipe;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/common/common", ["./pipes/async.pipe", "../platform/bootstrap/utils"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var async_pipe_1 = $__require('./pipes/async.pipe');
+  var utils_1 = $__require('../platform/bootstrap/utils');
+  function bootstrap(ngModule) {
+    utils_1.bootstrapHelper(ngModule, [async_pipe_1.AsyncPipe]);
+  }
+  exports.bootstrap = bootstrap;
+  return module.exports;
+});
+
 System.registerDynamic("decamelize", [], true, function($__require, exports, module) {
   "use strict";
   ;
@@ -399,7 +471,6 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/value", [], tru
   function bootstrap(ngModule, target) {
     var value = target.__annotations__.value;
     var name = value.name;
-    console.log(value);
     ngModule.value(name, value.value);
     return name;
   }
@@ -673,13 +744,14 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/core", "./bootstrap/utils", "../core/core"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/core", "../common/common", "./bootstrap/utils", "../core/core"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
   var core_1 = $__require('./bootstrap/core');
+  var common_1 = $__require('../common/common');
   var utils_1 = $__require('./bootstrap/utils');
   var core_2 = $__require('../core/core');
   function bootstrap(ngModule, component, providers) {
@@ -687,6 +759,7 @@ System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/c
       providers = [];
     }
     core_1.bootstrap(ngModule, component);
+    common_1.bootstrap(ngModule);
     utils_1.bootstrapHelper(ngModule, core_2.provide(core_2.Injector, {useFactory: function() {
         return new core_2.Injector(ngModule);
       }}));

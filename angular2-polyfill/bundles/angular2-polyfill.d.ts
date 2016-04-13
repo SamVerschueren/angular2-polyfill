@@ -253,6 +253,21 @@ declare module "angular2-polyfill/platform/browser" {
 declare module "angular2-polyfill/src/platform/bootstrap/core" {
     export function bootstrap(ngModule: any, component: any): void;
 }
+declare module "angular2-polyfill/src/common/pipes/async.pipe" {
+    /**
+     * Thanks to @cvuorinen for the angular1-async-filter
+     * https://github.com/cvuorinen/angular1-async-filter
+     */
+    import { PipeTransform } from "angular2-polyfill/src/core/core";
+    export class AsyncPipe implements PipeTransform {
+        private static currentObjectID;
+        private static values;
+        private static subscriptions;
+        constructor();
+        static objectId(obj: any): any;
+        transform(input: any, [scope]: [any]): any;
+    }
+}
 declare module "angular2-polyfill/src/platform/bootstrap/component" {
     export function bootstrap(ngModule: any, target: any, parentState?: any): string;
 }
@@ -291,6 +306,9 @@ declare module "angular2-polyfill/src/platform/bootstrap/utils" {
     };
     export function bindHostBindings(scope: any, el: angular.IRootElementService, hostBindings: any, controllerAs?: string): void;
     export function bootstrapHelper(ngModule: any, target: any): any;
+}
+declare module "angular2-polyfill/src/common/common" {
+    export function bootstrap(ngModule: any): void;
 }
 declare module "angular2-polyfill/src/platform/upgrade" {
     export function bootstrap(ngModule: any, component: any, providers?: any[]): void;
