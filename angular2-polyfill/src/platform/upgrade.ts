@@ -5,7 +5,7 @@ import {Injector, provide} from '../core/core';
 
 export function bootstrap(ngModule, component, providers: any[] = []) {
 	// Bootstrap the core
-	coreBootstrap(ngModule, component);
+	coreBootstrap(ngModule);
 
 	// Bootstrap common components
 	commonBootstrap(ngModule);
@@ -13,9 +13,9 @@ export function bootstrap(ngModule, component, providers: any[] = []) {
 	// Bootstrap the injector
 	bootstrapHelper(ngModule, provide(Injector, {useFactory: () => new Injector(ngModule)}));
 
-	// Bootstrap the app tree
-	bootstrapHelper(ngModule, component);
-
 	// Bootstrap providers
 	providers.forEach(provider => bootstrapHelper(ngModule, provider));
+
+	// Bootstrap the app tree
+	bootstrapHelper(ngModule, component);
 }

@@ -9,7 +9,7 @@ export function bootstrap(ngModule, target) {
 	let ret = value.value;
 
 	if (annotations.multi === true) {
-		const injector = angular.injector([ngModule.name]);
+		const injector = angular.injector(['ng', ngModule.name]);
 		const injectables = utils.getInjectables(injector, name) || [];
 
 		if (!Array.isArray(injectables)) {

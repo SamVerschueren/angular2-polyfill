@@ -9,7 +9,7 @@ export class Injector {
 
 	constructor(module: ng.IModule) {
 		this._module = module;
-		this._injector = angular.injector([module.name]);
+		this._injector = angular.injector(['ng', module.name]);
 	}
 
 	get(token: any) {

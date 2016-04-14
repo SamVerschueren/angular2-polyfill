@@ -1,7 +1,7 @@
 import * as utils from './utils';
 
 function bootstrapMulti(ngModule, name, target) {
-	const injector = angular.injector([ngModule.name]);
+	const injector = angular.injector(['ng', ngModule.name]);
 	const injectables = utils.getInjectables(injector, name) || [];
 
 	if (!Array.isArray(injectables)) {

@@ -1,6 +1,6 @@
 let bootstrapped = false;
 
-export function bootstrap(ngModule, component) {
+export function bootstrap(ngModule) {
 	if (bootstrapped) {
 		return;
 	}

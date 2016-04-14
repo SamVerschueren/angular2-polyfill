@@ -251,7 +251,7 @@ declare module "angular2-polyfill/platform/browser" {
     export function bootstrap(base: any): void;
 }
 declare module "angular2-polyfill/src/platform/bootstrap/core" {
-    export function bootstrap(ngModule: any, component: any): void;
+    export function bootstrap(ngModule: any): void;
 }
 declare module "angular2-polyfill/src/common/pipes/async.pipe" {
     /**
