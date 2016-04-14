@@ -44,7 +44,7 @@ export function bootstrap(ngModule) {
 		};
 	}]);
 
-	angular.element(document).ready(function () {
-		angular.bootstrap(document, [ngModule.name])
+	angular.element(document).ready(() => {
+		angular.bootstrap(document, [ngModule.name]);
 	});
 }

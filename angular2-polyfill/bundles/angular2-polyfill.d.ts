@@ -101,9 +101,8 @@ declare module "angular2-polyfill/src/core/classes/opaque_token" {
 }
 declare module "angular2-polyfill/src/core/classes/injector" {
     export class Injector {
-        private _module;
         private _injector;
-        constructor(module: ng.IModule);
+        constructor();
         get(token: any): {};
         getOptional(token: any): {};
     }
@@ -274,6 +273,11 @@ declare module "angular2-polyfill/src/platform/bootstrap/component" {
 declare module "angular2-polyfill/src/platform/bootstrap/directive" {
     export function bootstrap(ngModule: any, target: any): void;
 }
+declare module "angular2-polyfill/src/platform/bootstrap/multi" {
+    export function bootstrapMultiFactory(ngModule: any, name: any, target: any): void;
+    export function bootstrapMultiInjectable(ngModule: any, name: any, target: any): void;
+    export function bootstrapMultiValue(ngModule: any, name: any, target: any): void;
+}
 declare module "angular2-polyfill/src/platform/bootstrap/factory" {
     export function bootstrap(ngModule: any, target: any): any;
 }
@@ -291,7 +295,6 @@ declare module "angular2-polyfill/src/platform/bootstrap/provider" {
     export function bootstrap(ngModule: any, provider: Provider): void;
 }
 declare module "angular2-polyfill/src/platform/bootstrap/utils" {
-    export function getInjectables(injector: any, name: any): any;
     export function inject(target: any): void;
     export function bindInput(target: any, directive: any): void;
     export function bindOutput(target: any, directive: any): void;

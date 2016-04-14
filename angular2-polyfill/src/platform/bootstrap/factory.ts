@@ -1,21 +1,5 @@
 import * as utils from './utils';
-
-function bootstrapMulti(ngModule, name, target) {
-	let injector = angular.injector(['ng', ngModule.name]);
-	let injectables = utils.getInjectables(injector, name) || [];
-
-	if (!Array.isArray(injectables)) {
-		throw new Error('You can not mix multi with single providers.');
-	}
-
-	// Create an injectable
-	const injectable = injector.invoke(target);
-
-	// Add the injectable to the list of injectables
-	injectables.push(injectable);
-
-	ngModule.value(name, injectables);
-}
+import {bootstrapMultiFactory as bootstrapMulti} from './multi';
 
 export function bootstrap(ngModule, target) {
 	const annotations = target.__annotations__;

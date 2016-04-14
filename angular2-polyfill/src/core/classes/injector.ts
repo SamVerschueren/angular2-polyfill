@@ -4,12 +4,10 @@ import {toInjectorName} from '../../utils';
 
 export class Injector {
 
-	private _module: ng.IModule;
 	private _injector: ng.auto.IInjectorService;
 
-	constructor(module: ng.IModule) {
-		this._module = module;
-		this._injector = angular.injector(['ng', module.name]);
+	constructor() {
+		this._injector = angular.element(document).injector();
 	}
 
 	get(token: any) {

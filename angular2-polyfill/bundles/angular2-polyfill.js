@@ -409,30 +409,21 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/factory", ["./utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/factory", ["./utils", "./multi"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
   var utils = $__require('./utils');
-  function bootstrapMulti(ngModule, name, target) {
-    var injector = angular.injector(['ng', ngModule.name]);
-    var injectables = utils.getInjectables(injector, name) || [];
-    if (!Array.isArray(injectables)) {
-      throw new Error('You can not mix multi with single providers.');
-    }
-    var injectable = injector.invoke(target);
-    injectables.push(injectable);
-    ngModule.value(name, injectables);
-  }
+  var multi_1 = $__require('./multi');
   function bootstrap(ngModule, target) {
     var annotations = target.__annotations__;
     var factory = annotations.factory;
     utils.inject(target);
     var name = factory.name || target.name;
     if (annotations.multi === true) {
-      bootstrapMulti(ngModule, name, target);
+      multi_1.bootstrapMultiFactory(ngModule, name, target);
     } else {
       ngModule.factory(name, target);
     }
@@ -476,58 +467,85 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/pipe", ["./util
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/value", ["./utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/value", ["./multi"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
-  var utils = $__require('./utils');
+  var multi_1 = $__require('./multi');
   function bootstrap(ngModule, target) {
     var annotations = target.__annotations__;
     var value = annotations.value;
     var name = value.name;
     var ret = value.value;
     if (annotations.multi === true) {
-      var injector = angular.injector(['ng', ngModule.name]);
-      var injectables = utils.getInjectables(injector, name) || [];
-      if (!Array.isArray(injectables)) {
-        throw new Error('You can not mix multi with single providers.');
-      }
-      injectables.push(ret);
-      ret = injectables;
+      multi_1.bootstrapMultiValue(ngModule, name, ret);
+    } else {
+      ngModule.value(name, ret);
     }
-    ngModule.value(name, ret);
     return name;
   }
   exports.bootstrap = bootstrap;
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["./utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/multi", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var id = 0;
+  var prefix = 'ng2Multi';
+  var map = {
+    factory: {},
+    service: {},
+    value: {}
+  };
+  function bootstrapMulti(fn, ngModule, name, target) {
+    map[fn][name] = map[fn][name] || [];
+    var privateName = prefix + "_" + fn + "_" + name + "_" + ++id;
+    ngModule[fn](privateName, target);
+    map[fn][name].push(privateName);
+    ngModule.factory(name, map[fn][name].concat([function() {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i - 0] = arguments[_i];
+      }
+      return args;
+    }]));
+  }
+  function bootstrapMultiFactory(ngModule, name, target) {
+    bootstrapMulti('factory', ngModule, name, target);
+  }
+  exports.bootstrapMultiFactory = bootstrapMultiFactory;
+  function bootstrapMultiInjectable(ngModule, name, target) {
+    bootstrapMulti('service', ngModule, name, target);
+  }
+  exports.bootstrapMultiInjectable = bootstrapMultiInjectable;
+  function bootstrapMultiValue(ngModule, name, target) {
+    bootstrapMulti('value', ngModule, name, target);
+  }
+  exports.bootstrapMultiValue = bootstrapMultiValue;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["./utils", "./multi"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
   var utils = $__require('./utils');
-  function bootstrapMulti(ngModule, name, target) {
-    var injector = angular.injector(['ng', ngModule.name]);
-    var injectables = utils.getInjectables(injector, name) || [];
-    if (!Array.isArray(injectables)) {
-      throw new Error('You can not mix multi with single providers.');
-    }
-    var injectable = injector.instantiate(target);
-    injectables.push(injectable);
-    ngModule.value(name, injectables);
-  }
+  var multi_1 = $__require('./multi');
   function bootstrap(ngModule, target) {
     var annotations = target.__annotations__ || {};
     var injectable = annotations.injectable || {};
     utils.inject(target);
     var name = injectable.name || target.name;
     if (annotations.multi === true) {
-      bootstrapMulti(ngModule, name, target);
+      multi_1.bootstrapMultiInjectable(ngModule, name, target);
     } else {
       ngModule.service(name, target);
     }
@@ -634,14 +652,6 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
       }
     });
   }
-  function getInjectables(injector, name) {
-    try {
-      return injector.get(name);
-    } catch (err) {
-      return undefined;
-    }
-  }
-  exports.getInjectables = getInjectables;
   function inject(target) {
     var annotations = target.__annotations__ || {};
     var injectables = [];
@@ -810,7 +820,7 @@ System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/c
     core_1.bootstrap(ngModule);
     common_1.bootstrap(ngModule);
     utils_1.bootstrapHelper(ngModule, core_2.provide(core_2.Injector, {useFactory: function() {
-        return new core_2.Injector(ngModule);
+        return new core_2.Injector();
       }}));
     providers.forEach(function(provider) {
       return utils_1.bootstrapHelper(ngModule, provider);
@@ -1250,9 +1260,8 @@ System.registerDynamic("angular2-polyfill/src/core/classes/injector", ["../../ut
       GLOBAL = this;
   var utils_1 = $__require('../../utils');
   var Injector = (function() {
-    function Injector(module) {
-      this._module = module;
-      this._injector = angular.injector(['ng', module.name]);
+    function Injector() {
+      this._injector = angular.element(document).injector();
     }
     Injector.prototype.get = function(token) {
       var name = utils_1.toInjectorName(token);

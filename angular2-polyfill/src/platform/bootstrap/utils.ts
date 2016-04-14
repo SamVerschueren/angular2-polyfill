@@ -9,7 +9,7 @@ import {bootstrap as bootstrapValue} from './value';
 import {bootstrap as bootstrapInjectable} from './injectable';
 import {bootstrap as bootstrapProvider} from './provider';
 
-declare var Reflect;
+declare const Reflect;
 
 function parseHostBinding(key: string) {
 	const regex = [
@@ -53,14 +53,6 @@ function applyValueToProperties(el: angular.IRootElementService, properties: any
 			}
 		}
 	});
-}
-
-export function getInjectables(injector, name) {
-	try {
-		return injector.get(name);
-	} catch (err) {
-		return undefined;
-	}
 }
 
 export function inject(target) {

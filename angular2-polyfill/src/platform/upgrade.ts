@@ -11,7 +11,7 @@ export function bootstrap(ngModule, component, providers: any[] = []) {
 	commonBootstrap(ngModule);
 
 	// Bootstrap the injector
-	bootstrapHelper(ngModule, provide(Injector, {useFactory: () => new Injector(ngModule)}));
+	bootstrapHelper(ngModule, provide(Injector, {useFactory: () => new Injector()}));
 
 	// Bootstrap providers
 	providers.forEach(provider => bootstrapHelper(ngModule, provider));
