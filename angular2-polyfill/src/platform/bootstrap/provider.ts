@@ -8,8 +8,6 @@ export function bootstrap(ngModule, provider: Provider) {
 	const name = toInjectorName(provider.token);
 	const inject = (provider.deps || []).map(toInjectorName);
 
-	// TODO implement multi
-
 	if (provider.useValue) {
 		const value = provider.useValue;
 		annotate(target, 'value', {name, value});
@@ -21,8 +19,9 @@ export function bootstrap(ngModule, provider: Provider) {
 		target = provider.useClass;
 		annotate(target, 'injectable', {name});
 	} else if (provider.useExisting) {
-		// TODO implement
-		throw new Error('Not yet implemented');
+		target = (v) => v;
+		annotate(target, 'factory', {name});
+		annotate(target, 'inject', [toInjectorName(provider.useExisting)]);
 	}
 
 	annotate(target, 'multi', provider.multi);

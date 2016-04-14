@@ -498,17 +498,13 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/multi", [], tru
       GLOBAL = this;
   var id = 0;
   var prefix = 'ng2Multi';
-  var map = {
-    factory: {},
-    service: {},
-    value: {}
-  };
+  var map = {};
   function bootstrapMulti(fn, ngModule, name, target) {
-    map[fn][name] = map[fn][name] || [];
+    map[name] = map[name] || [];
     var privateName = prefix + "_" + fn + "_" + name + "_" + ++id;
     ngModule[fn](privateName, target);
-    map[fn][name].push(privateName);
-    ngModule.factory(name, map[fn][name].concat([function() {
+    map[name].push(privateName);
+    ngModule.factory(name, map[name].concat([function() {
       var args = [];
       for (var _i = 0; _i < arguments.length; _i++) {
         args[_i - 0] = arguments[_i];
@@ -581,7 +577,11 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/provider", ["..
       target = provider.useClass;
       utils_1.annotate(target, 'injectable', {name: name});
     } else if (provider.useExisting) {
-      throw new Error('Not yet implemented');
+      target = function(v) {
+        return v;
+      };
+      utils_1.annotate(target, 'factory', {name: name});
+      utils_1.annotate(target, 'inject', [utils_1.toInjectorName(provider.useExisting)]);
     }
     utils_1.annotate(target, 'multi', provider.multi);
     utils.bootstrapHelper(ngModule, target);
