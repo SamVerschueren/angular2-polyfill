@@ -25,5 +25,7 @@ export function bootstrap(ngModule, provider: Provider) {
 		throw new Error('Not yet implemented');
 	}
 
+	annotate(target, 'multi', provider.multi);
+
 	utils.bootstrapHelper(ngModule, target);
 }

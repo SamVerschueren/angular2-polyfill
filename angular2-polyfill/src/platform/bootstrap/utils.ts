@@ -55,6 +55,14 @@ function applyValueToProperties(el: angular.IRootElementService, properties: any
 	});
 }
 
+export function getInjectables(injector, name) {
+	try {
+		return injector.get(name);
+	} catch (err) {
+		return undefined;
+	}
+}
+
 export function inject(target) {
 	const annotations = target.__annotations__ || {};
 	const injectables = [];
@@ -71,7 +79,7 @@ export function inject(target) {
 
 	if (Reflect.hasMetadata('design:paramtypes', target)) {
 		Reflect.getMetadata('design:paramtypes', target).forEach(function(type, index) {
-			if (type.name !== 'Object') {
+			if (type.name !== 'Object' && injectables[index] === undefined) {
 				injectables[index] = type.name;
 			}
 		});

@@ -416,12 +416,26 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/factory", ["./u
       global = this,
       GLOBAL = this;
   var utils = $__require('./utils');
+  function bootstrapMulti(ngModule, name, target) {
+    var injector = angular.injector([ngModule.name]);
+    var injectables = utils.getInjectables(injector, name) || [];
+    if (!Array.isArray(injectables)) {
+      throw new Error('You can not mix multi with single providers.');
+    }
+    var injectable = injector.invoke(target);
+    injectables.push(injectable);
+    ngModule.value(name, injectables);
+  }
   function bootstrap(ngModule, target) {
     var annotations = target.__annotations__;
     var factory = annotations.factory;
     utils.inject(target);
     var name = factory.name || target.name;
-    ngModule.factory(name, target);
+    if (annotations.multi === true) {
+      bootstrapMulti(ngModule, name, target);
+    } else {
+      ngModule.factory(name, target);
+    }
     return name;
   }
   exports.bootstrap = bootstrap;
@@ -462,16 +476,28 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/pipe", ["./util
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/value", [], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/value", ["./utils"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
+  var utils = $__require('./utils');
   function bootstrap(ngModule, target) {
-    var value = target.__annotations__.value;
+    var annotations = target.__annotations__;
+    var value = annotations.value;
     var name = value.name;
-    ngModule.value(name, value.value);
+    var ret = value.value;
+    if (annotations.multi === true) {
+      var injector = angular.injector([ngModule.name]);
+      var injectables = utils.getInjectables(injector, name) || [];
+      if (!Array.isArray(injectables)) {
+        throw new Error('You can not mix multi with single providers.');
+      }
+      injectables.push(ret);
+      ret = injectables;
+    }
+    ngModule.value(name, ret);
     return name;
   }
   exports.bootstrap = bootstrap;
@@ -484,13 +510,27 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["
   var define,
       global = this,
       GLOBAL = this;
-  var utils_1 = $__require('./utils');
+  var utils = $__require('./utils');
+  function bootstrapMulti(ngModule, name, target) {
+    var injector = angular.injector([ngModule.name]);
+    var injectables = utils.getInjectables(injector, name) || [];
+    if (!Array.isArray(injectables)) {
+      throw new Error('You can not mix multi with single providers.');
+    }
+    var injectable = injector.instantiate(target);
+    injectables.push(injectable);
+    ngModule.value(name, injectables);
+  }
   function bootstrap(ngModule, target) {
     var annotations = target.__annotations__ || {};
     var injectable = annotations.injectable || {};
+    utils.inject(target);
     var name = injectable.name || target.name;
-    utils_1.inject(target);
-    ngModule.service(name, target);
+    if (annotations.multi === true) {
+      bootstrapMulti(ngModule, name, target);
+    } else {
+      ngModule.service(name, target);
+    }
     return name;
   }
   exports.bootstrap = bootstrap;
@@ -525,6 +565,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/provider", ["..
     } else if (provider.useExisting) {
       throw new Error('Not yet implemented');
     }
+    utils_1.annotate(target, 'multi', provider.multi);
     utils.bootstrapHelper(ngModule, target);
   }
   exports.bootstrap = bootstrap;
@@ -593,6 +634,14 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
       }
     });
   }
+  function getInjectables(injector, name) {
+    try {
+      return injector.get(name);
+    } catch (err) {
+      return undefined;
+    }
+  }
+  exports.getInjectables = getInjectables;
   function inject(target) {
     var annotations = target.__annotations__ || {};
     var injectables = [];
@@ -607,7 +656,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
     }
     if (Reflect.hasMetadata('design:paramtypes', target)) {
       Reflect.getMetadata('design:paramtypes', target).forEach(function(type, index) {
-        if (type.name !== 'Object') {
+        if (type.name !== 'Object' && injectables[index] === undefined) {
           injectables[index] = type.name;
         }
       });

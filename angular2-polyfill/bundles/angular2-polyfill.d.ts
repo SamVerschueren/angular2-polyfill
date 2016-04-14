@@ -291,6 +291,7 @@ declare module "angular2-polyfill/src/platform/bootstrap/provider" {
     export function bootstrap(ngModule: any, provider: Provider): void;
 }
 declare module "angular2-polyfill/src/platform/bootstrap/utils" {
+    export function getInjectables(injector: any, name: any): any;
     export function inject(target: any): void;
     export function bindInput(target: any, directive: any): void;
     export function bindOutput(target: any, directive: any): void;
