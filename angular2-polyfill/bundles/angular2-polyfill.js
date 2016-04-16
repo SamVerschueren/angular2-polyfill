@@ -1,4 +1,4 @@
-System.registerDynamic("angular2-polyfill/src/http/http.service", ["../../core"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/http/http.service", ["rxjs", "../../core"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -21,28 +21,29 @@ System.registerDynamic("angular2-polyfill/src/http/http.service", ["../../core"]
       decorator(target, key, paramIndex);
     };
   };
+  var rxjs_1 = $__require('rxjs');
   var core_1 = $__require('../../core');
   var Http = (function() {
     function Http(http) {
       this.http = http;
     }
     Http.prototype.get = function(url, options) {
-      return this.http.get(url, options);
+      return rxjs_1.Observable.fromPromise(this.http.get(url, options));
     };
     Http.prototype.post = function(url, body, options) {
-      return this.http.post(url, body, options);
+      return rxjs_1.Observable.fromPromise(this.http.post(url, body, options));
     };
     Http.prototype.put = function(url, body, options) {
-      return this.http.put(url, body, options);
+      return rxjs_1.Observable.fromPromise(this.http.put(url, body, options));
     };
     Http.prototype.delete = function(url, options) {
-      return this.http.delete(url, options);
+      return rxjs_1.Observable.fromPromise(this.http.delete(url, options));
     };
     Http.prototype.patch = function(url, body, options) {
-      return this.http.patch(url, body, options);
+      return rxjs_1.Observable.fromPromise(this.http.patch(url, body, options));
     };
     Http.prototype.head = function(url, options) {
-      return this.http.head(url, options);
+      return rxjs_1.Observable.fromPromise(this.http.head(url, options));
     };
     Http = __decorate([__param(0, core_1.Inject('$http'))], Http);
     return Http;
@@ -194,7 +195,7 @@ System.registerDynamic("angular2-polyfill/src/common/common", ["./pipes/async.pi
   return module.exports;
 });
 
-System.registerDynamic("decamelize", [], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/node_modules/decamelize/index", [], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -1082,7 +1083,7 @@ System.registerDynamic("angular2-polyfill/src/core/classes/provider", [], true, 
   return module.exports;
 });
 
-System.registerDynamic("is-obj", [], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/node_modules/is-obj/index", [], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -1095,7 +1096,7 @@ System.registerDynamic("is-obj", [], true, function($__require, exports, module)
   return module.exports;
 });
 
-System.registerDynamic("dot-prop", ["is-obj"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/node_modules/dot-prop/index", ["is-obj"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -1174,7 +1175,7 @@ System.registerDynamic("dot-prop", ["is-obj"], true, function($__require, export
   return module.exports;
 });
 
-System.registerDynamic("camelcase", [], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/node_modules/camelcase/index", [], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,

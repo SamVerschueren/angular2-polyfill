@@ -168,17 +168,18 @@ declare module "angular2-polyfill/src/http/interfaces/Response" {
     }
 }
 declare module "angular2-polyfill/src/http/http.service" {
+    import { Observable } from 'rxjs';
     import { RequestOptionsArgs } from "angular2-polyfill/src/http/interfaces/RequestOptionsArgs";
     import { Response } from "angular2-polyfill/src/http/interfaces/Response";
     export class Http {
         private http;
         constructor(http: any);
-        get(url: string, options?: RequestOptionsArgs): Promise<Response>;
-        post(url: string, body: any, options?: RequestOptionsArgs): Promise<Response>;
-        put(url: string, body: any, options?: RequestOptionsArgs): Promise<Response>;
-        delete(url: string, options?: RequestOptionsArgs): Promise<Response>;
-        patch(url: string, body: any, options?: RequestOptionsArgs): Promise<Response>;
-        head(url: string, options?: RequestOptionsArgs): Promise<Response>;
+        get(url: string, options?: RequestOptionsArgs): Observable<Response>;
+        post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
+        put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
+        delete(url: string, options?: RequestOptionsArgs): Observable<Response>;
+        patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response>;
+        head(url: string, options?: RequestOptionsArgs): Observable<Response>;
     }
 }
 declare module "angular2-polyfill/src/http/providers" {

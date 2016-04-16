@@ -18,7 +18,7 @@
     "pub": "cd angular2-polyfill && npm publish",
     "typings": "cd angular2-polyfill && typings",
     "link": "cd angular2-polyfill && jspm link npm:angular2-polyfill@dev -y",
-    "tsd-gen": "tsc -p angular2-polyfill --outFile angular2-polyfill/bundles/angular2-polyfill.js --module system -d --moduleResolution classic --rootDir \"./\""
+    "tsd-gen": "tsc -p angular2-polyfill --outFile angular2-polyfill/bundles/angular2-polyfill.js --module system -d --moduleResolution node --rootDir \"./\""
   },
   "devDependencies": {
     "gulp": "^3.9.1",

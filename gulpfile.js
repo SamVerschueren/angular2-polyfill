@@ -14,12 +14,22 @@ const ANGULAR2_POLYFILL_BUNDLE_CONFIG = [
 
 const NG2_POLYFILL_BUNDLE_CONTENT = ANGULAR2_POLYFILL_BUNDLE_CONFIG.join(' + ');
 
+const BASE = path.join(__dirname, 'angular2-polyfill');
+
 const bundleConfig = {
+	map: {
+		'dot-prop': path.join(BASE, '/node_modules/dot-prop/index.js'),
+		'is-obj': path.join(BASE, '/node_modules/is-obj/index.js'),
+		'camelcase': path.join(BASE, '/node_modules/camelcase/index.js'),
+		'decamelize': path.join(BASE, '/node_modules/decamelize/index.js'),
+		'rxjs': path.join(BASE, '/node_modules/rxjs/Rx.js')
+	},
+	meta: {
+		rxjs: {
+			build: false
+		}
+	},
 	paths: {
-		'dot-prop': path.join(__dirname, '/node_modules/dot-prop/index.js'),
-		'is-obj': path.join(__dirname, '/node_modules/is-obj/index.js'),
-		'camelcase': path.join(__dirname, '/node_modules/camelcase/index.js'),
-		'decamelize': path.join(__dirname, '/node_modules/decamelize/index.js'),
 		'*': '*.js'
 	}
 };

@@ -8,7 +8,8 @@
     "experimentalDecorators": true
   },
   "exclude": [
-		"bundles",
+	"bundles",
+	"node_modules",
     "typings/browser",
     "typings/browser.d.ts"
   ]
