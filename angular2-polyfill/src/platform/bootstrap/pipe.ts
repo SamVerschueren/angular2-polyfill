@@ -1,8 +1,8 @@
-import * as utils from './utils';
+import * as injector from '../utils/injector';
 
 export function bootstrap(ngModule, target) {
 	const pipe = target.__annotations__.pipe;
-	utils.inject(target);
+	injector.inject(ngModule, target);
 
 	const filter = target.$inject || [];
 	filter.push((...args) => {

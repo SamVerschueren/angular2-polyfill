@@ -1,4 +1,4 @@
-import * as utils from './utils';
+import * as injector from '../utils/injector';
 import {bootstrapMultiInjectable as bootstrapMulti} from './multi';
 
 export function bootstrap(ngModule, target) {
@@ -6,7 +6,7 @@ export function bootstrap(ngModule, target) {
 	const injectable = annotations.injectable || {};
 
 	// DI
-	utils.inject(target);
+	injector.inject(ngModule, target);
 
 	const name = injectable.name || target.name;
 

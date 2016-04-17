@@ -1,7 +1,11 @@
 import * as camelcase from 'camelcase';
 import * as decamelize from 'decamelize';
 import {Router} from '../../router/router';
-import * as utils from './utils';
+import * as utils from './index';
+import * as host from '../utils/host';
+import * as injector from '../utils/injector';
+import * as input from '../utils/input';
+import * as output from '../utils/output';
 
 let map = {};
 const states = {};
@@ -20,9 +24,9 @@ export function bootstrap(ngModule, target, parentState?: any) {
 	map[target.name] = decamelize(component.selector || target.name, '-');
 
 	// Bootstrap providers, directives and pipes
-	(component.providers || []).forEach(provider => utils.bootstrapHelper(ngModule, provider));
-	(component.directives || []).forEach(directive => utils.bootstrapHelper(ngModule, directive));
-	(component.pipes || []).forEach(pipe => utils.bootstrapHelper(ngModule, pipe));
+	(component.providers || []).forEach(provider => utils.bootstrap(ngModule, provider));
+	(component.directives || []).forEach(directive => utils.bootstrap(ngModule, directive));
+	(component.pipes || []).forEach(pipe => utils.bootstrap(ngModule, pipe));
 
 	// Define the style elements
 	(component.styles || []).forEach(style => {
@@ -33,9 +37,9 @@ export function bootstrap(ngModule, target, parentState?: any) {
 	});
 
 	// Inject the services
-	utils.inject(target);
+	injector.inject(ngModule, target);
 
-	const hostBindings = utils.parseHosts(component.host || {});
+	const hostBindings = host.parse(component.host || {});
 
 	ngModule
 		.controller(target.name, target)
@@ -54,7 +58,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 					return {
 						pre: (scope, el) => {
 							// Bind the hosts
-							utils.bindHostBindings(scope, el, hostBindings, component.controllerAs);
+							host.bind(scope, el, hostBindings, component.controllerAs);
 
 							if (target.prototype.ngOnInit) {
 								// Call the `ngOnInit` lifecycle hook
@@ -77,8 +81,8 @@ export function bootstrap(ngModule, target, parentState?: any) {
 			};
 
 			// Bind inputs and outputs
-			utils.bindInput(target, directive);
-			utils.bindOutput(target, directive);
+			input.bind(target, directive);
+			output.bind(target, directive);
 
 			// Set the template
 			if (component.template) {
@@ -137,7 +141,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 						throw new Error('@CanActivate class does not implement the `CanActivate` interface.');
 					}
 
-					hook.push(utils.bootstrapHelper(ngModule, routerAnnotations.canActivate));
+					hook.push(utils.bootstrap(ngModule, routerAnnotations.canActivate));
 				}
 
 				hook.push((router: Router, $state, $stateParams, handler) => {

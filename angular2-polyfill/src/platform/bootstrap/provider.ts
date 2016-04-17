@@ -1,6 +1,6 @@
 import {Provider} from '../../core/core';
 import {toInjectorName, annotate} from '../../utils';
-import * as utils from './utils';
+import * as utils from './index';
 
 export function bootstrap(ngModule, provider: Provider) {
 	let target: any = {};
@@ -26,5 +26,5 @@ export function bootstrap(ngModule, provider: Provider) {
 
 	annotate(target, 'multi', provider.multi);
 
-	utils.bootstrapHelper(ngModule, target);
+	utils.bootstrap(ngModule, target);
 }

@@ -1,6 +1,6 @@
 import {AsyncPipe} from './pipes/async.pipe';
-import {bootstrapHelper} from '../platform/bootstrap/utils';
+import * as utils from '../platform/bootstrap/index';
 
 export function bootstrap(ngModule) {
-	bootstrapHelper(ngModule, [AsyncPipe]);
+	utils.bootstrap(ngModule, [AsyncPipe]);
 }

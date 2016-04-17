@@ -1,5 +1,3 @@
-import * as utils from './utils';
-
 let id = 0;
 const prefix = 'ng2Multi';
 const map = {};

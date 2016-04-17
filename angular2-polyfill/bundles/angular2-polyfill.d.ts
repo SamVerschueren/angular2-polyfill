@@ -268,6 +268,28 @@ declare module "angular2-polyfill/src/common/pipes/async.pipe" {
         transform(input: any, [scope]: [any]): any;
     }
 }
+declare module "angular2-polyfill/src/platform/utils/host" {
+    export function parse(hostBindings: {
+        string: string;
+    }[]): {
+        attrs: {};
+        events: {};
+        props: {
+            raw: {};
+            expressions: {};
+        };
+    };
+    export function bind(scope: any, el: angular.IRootElementService, hostBindings: any, controllerAs?: string): void;
+}
+declare module "angular2-polyfill/src/platform/utils/injector" {
+    export function inject(ngModule: ng.IModule, target: any): void;
+}
+declare module "angular2-polyfill/src/platform/utils/input" {
+    export function bind(target: any, directive: any): void;
+}
+declare module "angular2-polyfill/src/platform/utils/output" {
+    export function bind(target: any, directive: any): void;
+}
 declare module "angular2-polyfill/src/platform/bootstrap/component" {
     export function bootstrap(ngModule: any, target: any, parentState?: any): string;
 }
@@ -295,22 +317,8 @@ declare module "angular2-polyfill/src/platform/bootstrap/provider" {
     import { Provider } from "angular2-polyfill/src/core/core";
     export function bootstrap(ngModule: any, provider: Provider): void;
 }
-declare module "angular2-polyfill/src/platform/bootstrap/utils" {
-    export function inject(target: any): void;
-    export function bindInput(target: any, directive: any): void;
-    export function bindOutput(target: any, directive: any): void;
-    export function parseHosts(hostBindings: {
-        string: string;
-    }[]): {
-        attrs: {};
-        events: {};
-        props: {
-            raw: {};
-            expressions: {};
-        };
-    };
-    export function bindHostBindings(scope: any, el: angular.IRootElementService, hostBindings: any, controllerAs?: string): void;
-    export function bootstrapHelper(ngModule: any, target: any): any;
+declare module "angular2-polyfill/src/platform/bootstrap/index" {
+    export function bootstrap(ngModule: any, target: any): any;
 }
 declare module "angular2-polyfill/src/common/common" {
     export function bootstrap(ngModule: any): void;

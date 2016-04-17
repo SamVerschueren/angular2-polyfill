@@ -1,4 +1,3 @@
-import * as utils from './utils';
 import {bootstrapMultiValue as bootstrapMulti} from './multi';
 
 export function bootstrap(ngModule, target) {

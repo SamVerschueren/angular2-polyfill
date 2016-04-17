@@ -1,4 +1,7 @@
-import * as utils from './utils';
+import * as host from '../utils/host';
+import * as injector from '../utils/injector';
+import * as input from '../utils/input';
+import * as output from '../utils/output';
 
 function parseSelector(selector: string) {
 	const regex = [
@@ -23,10 +26,10 @@ export function bootstrap(ngModule, target) {
 	const directive = annotations.directive;
 
 	const selector = parseSelector(directive.selector);
-	const hostBindings = utils.parseHosts(directive.host || {});
+	const hostBindings = host.parse(directive.host || {});
 
 	// Inject the services
-	utils.inject(target);
+	injector.inject(ngModule, target);
 
 	ngModule
 		.controller(target.name, target)
@@ -37,12 +40,12 @@ export function bootstrap(ngModule, target) {
 				bindToController: {},
 				controller: target.name,
 				controllerAs: '$ctrl',
-				link: (scope, el) => utils.bindHostBindings(scope, el, hostBindings)
+				link: (scope, el) => host.bind(scope, el, hostBindings)
 			};
 
 			// Bind inputs and outputs
-			utils.bindInput(target, declaration);
-			utils.bindOutput(target, declaration);
+			input.bind(target, declaration);
+			output.bind(target, declaration);
 
 			return declaration;
 		}]);

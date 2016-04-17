@@ -1,11 +1,11 @@
-import * as utils from './utils';
+import * as injector from '../utils/injector';
 import {bootstrapMultiFactory as bootstrapMulti} from './multi';
 
 export function bootstrap(ngModule, target) {
 	const annotations = target.__annotations__;
 	const factory = annotations.factory;
 
-	utils.inject(target);
+	injector.inject(ngModule, target);
 
 	const name = factory.name || target.name;
 

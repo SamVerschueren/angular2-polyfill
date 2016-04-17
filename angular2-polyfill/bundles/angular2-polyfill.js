@@ -180,16 +180,16 @@ System.registerDynamic("angular2-polyfill/src/common/pipes/async.pipe", ["../../
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/common/common", ["./pipes/async.pipe", "../platform/bootstrap/utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/common/common", ["./pipes/async.pipe", "../platform/bootstrap/index"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
   var async_pipe_1 = $__require('./pipes/async.pipe');
-  var utils_1 = $__require('../platform/bootstrap/utils');
+  var utils = $__require('../platform/bootstrap/index');
   function bootstrap(ngModule) {
-    utils_1.bootstrapHelper(ngModule, [async_pipe_1.AsyncPipe]);
+    utils.bootstrap(ngModule, [async_pipe_1.AsyncPipe]);
   }
   exports.bootstrap = bootstrap;
   return module.exports;
@@ -211,7 +211,7 @@ System.registerDynamic("angular2-polyfill/node_modules/decamelize/index", [], tr
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["camelcase", "decamelize", "./utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["camelcase", "decamelize", "./index", "../utils/host", "../utils/injector", "../utils/input", "../utils/output"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -219,7 +219,11 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
       GLOBAL = this;
   var camelcase = $__require('camelcase');
   var decamelize = $__require('decamelize');
-  var utils = $__require('./utils');
+  var utils = $__require('./index');
+  var host = $__require('../utils/host');
+  var injector = $__require('../utils/injector');
+  var input = $__require('../utils/input');
+  var output = $__require('../utils/output');
   var map = {};
   var states = {};
   function bootstrap(ngModule, target, parentState) {
@@ -233,13 +237,13 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
     }
     map[target.name] = decamelize(component.selector || target.name, '-');
     (component.providers || []).forEach(function(provider) {
-      return utils.bootstrapHelper(ngModule, provider);
+      return utils.bootstrap(ngModule, provider);
     });
     (component.directives || []).forEach(function(directive) {
-      return utils.bootstrapHelper(ngModule, directive);
+      return utils.bootstrap(ngModule, directive);
     });
     (component.pipes || []).forEach(function(pipe) {
-      return utils.bootstrapHelper(ngModule, pipe);
+      return utils.bootstrap(ngModule, pipe);
     });
     (component.styles || []).forEach(function(style) {
       styleElements.push(angular.element('<style type="text/css">@charset "UTF-8";' + style + '</style>'));
@@ -247,8 +251,8 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
     (component.styleUrls || []).forEach(function(url) {
       styleElements.push(angular.element('<link rel="stylesheet" href="' + url + '">'));
     });
-    utils.inject(target);
-    var hostBindings = utils.parseHosts(component.host || {});
+    injector.inject(ngModule, target);
+    var hostBindings = host.parse(component.host || {});
     ngModule.controller(target.name, target).directive(name, ['$compile', function($compile) {
       var directive = {
         restrict: 'E',
@@ -262,7 +266,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
             return headEl.prepend(el);
           });
           return {pre: function(scope, el) {
-              utils.bindHostBindings(scope, el, hostBindings, component.controllerAs);
+              host.bind(scope, el, hostBindings, component.controllerAs);
               if (target.prototype.ngOnInit) {
                 var init = $compile("<div ng-init=\"" + directive.controllerAs + ".ngOnInit();\"></div>")(scope);
                 el.append(init);
@@ -278,8 +282,8 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
             }};
         }
       };
-      utils.bindInput(target, directive);
-      utils.bindOutput(target, directive);
+      input.bind(target, directive);
+      output.bind(target, directive);
       if (component.template) {
         directive.template = component.template;
       } else {
@@ -316,7 +320,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
             if (!routerAnnotations.canActivate.prototype.routerCanActivate) {
               throw new Error('@CanActivate class does not implement the `CanActivate` interface.');
             }
-            hook.push(utils.bootstrapHelper(ngModule, routerAnnotations.canActivate));
+            hook.push(utils.bootstrap(ngModule, routerAnnotations.canActivate));
           }
           hook.push(function(router, $state, $stateParams, handler) {
             var fn = handler ? handler.routerCanActivate : routerAnnotations.canActivate;
@@ -357,13 +361,192 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", ["./utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/utils/host", ["camelcase", "dot-prop"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
-  var utils = $__require('./utils');
+  var camelcase = $__require('camelcase');
+  var dotProp = $__require('dot-prop');
+  function parseHostBinding(key) {
+    var regex = [{
+      type: 'attr',
+      regex: /^([a-zA-Z]+)$/
+    }, {
+      type: 'prop',
+      regex: /^\[([a-zA-Z\.-]+)\]$/
+    }, {
+      type: 'event',
+      regex: /^\(([a-zA-Z]+)\)$/
+    }];
+    for (var i = 0; i < regex.length; i++) {
+      var match = key.match(regex[i].regex);
+      if (match !== null) {
+        return {
+          type: regex[i].type,
+          value: match[1]
+        };
+      }
+    }
+    ;
+    return {
+      type: undefined,
+      value: key
+    };
+  }
+  function applyValueToProperties(el, properties, value) {
+    properties.forEach(function(property) {
+      var splitted = property.split('.');
+      if (splitted.length === 1) {
+        el.prop(camelcase(property), value);
+      } else {
+        var root = splitted.shift();
+        if (root === 'class') {
+          var method = value ? 'addClass' : 'removeClass';
+          el[method](splitted.join('.'));
+        } else {
+          var runner = el.prop(camelcase(root));
+          while (splitted.length > 1) {
+            runner = runner[camelcase(splitted.shift())];
+          }
+          runner[camelcase(splitted.shift())] = value;
+        }
+      }
+    });
+  }
+  function parse(hostBindings) {
+    var result = {
+      attrs: {},
+      events: {},
+      props: {
+        raw: {},
+        expressions: {}
+      }
+    };
+    Object.keys(hostBindings).forEach(function(key) {
+      var value = hostBindings[key];
+      var parsed = parseHostBinding(key);
+      if (parsed.type === 'attr') {
+        result.attrs[parsed.value] = value;
+      } else if (parsed.type === 'event') {
+        var handler = value.match(/^([a-zA-Z]+)\((.*?)\)$/);
+        var method = handler[1];
+        var params = handler[2].length === 0 ? [] : handler[2].split(/,[ ]*/);
+        result.events[parsed.value] = {
+          method: method,
+          params: params
+        };
+      } else if (parsed.type === 'prop') {
+        var raw = value.match(/^['"](.*?)['"]$/);
+        var map = 'expressions';
+        if (raw) {
+          value = raw[1];
+          map = 'raw';
+        }
+        result.props[map][value] = result.props[map][value] || [];
+        result.props[map][value].push(parsed.value);
+      }
+    });
+    return result;
+  }
+  exports.parse = parse;
+  function bind(scope, el, hostBindings, controllerAs) {
+    if (controllerAs === void 0) {
+      controllerAs = '$ctrl';
+    }
+    Object.keys(hostBindings.attrs).forEach(function(attribute) {
+      el.attr(attribute, hostBindings.attrs[attribute]);
+    });
+    Object.keys(hostBindings.events).forEach(function(event) {
+      var target = hostBindings.events[event];
+      el.bind(event, function(e) {
+        var ctx = {$event: e};
+        scope.$apply(function() {
+          scope[controllerAs][target.method].apply(scope[controllerAs], target.params.map(function(param) {
+            return dotProp.get(ctx, param);
+          }));
+        });
+      });
+    });
+    Object.keys(hostBindings.props.raw).forEach(function(value) {
+      var properties = hostBindings.props.raw[value];
+      applyValueToProperties(el, properties, value);
+    });
+    Object.keys(hostBindings.props.expressions).forEach(function(expression) {
+      var properties = hostBindings.props.expressions[expression];
+      scope.$watch(controllerAs + "." + expression, function(newValue) {
+        applyValueToProperties(el, properties, newValue);
+      });
+    });
+  }
+  exports.bind = bind;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/platform/utils/input", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  function bind(target, directive) {
+    var annotations = target.__annotations__;
+    var component = annotations.component || annotations.directive;
+    function signOf(key) {
+      if (Reflect.hasMetadata('design:type', target.prototype, key)) {
+        var type = Reflect.getMetadata('design:type', target.prototype, key);
+        if (type.name === 'String' || type.name === 'Number' || type.name === 'Boolean') {
+          return '@';
+        } else {
+          return '=';
+        }
+      }
+      return '@';
+    }
+    (component.inputs || []).forEach(function(key) {
+      var mapping = key.split(/:[ ]*/);
+      directive.bindToController[mapping[0]] = signOf(key) + (mapping[1] || mapping[0]);
+    });
+    Object.keys(annotations.inputs || {}).forEach(function(key) {
+      directive.bindToController[key] = signOf(key) + annotations.inputs[key];
+    });
+  }
+  exports.bind = bind;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/platform/utils/output", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  function bind(target, directive) {
+    var annotations = target.__annotations__;
+    var component = annotations.component || annotations.directive;
+    (component.outputs || []).forEach(function(key) {
+      var mapping = key.split(/:[ ]*/);
+      directive.bindToController[mapping[0]] = '&' + (mapping[1] || mapping[0]);
+    });
+    Object.keys(annotations.outputs || {}).forEach(function(key) {
+      return directive.bindToController[key] = "&" + annotations.outputs[key];
+    });
+  }
+  exports.bind = bind;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", ["../utils/host", "../utils/injector", "../utils/input", "../utils/output"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var host = $__require('../utils/host');
+  var injector = $__require('../utils/injector');
+  var input = $__require('../utils/input');
+  var output = $__require('../utils/output');
   function parseSelector(selector) {
     var regex = [{
       key: 'A',
@@ -388,8 +571,8 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
     var annotations = target.__annotations__;
     var directive = annotations.directive;
     var selector = parseSelector(directive.selector);
-    var hostBindings = utils.parseHosts(directive.host || {});
-    utils.inject(target);
+    var hostBindings = host.parse(directive.host || {});
+    injector.inject(ngModule, target);
     ngModule.controller(target.name, target).directive(selector.name, [function() {
       var declaration = {
         restrict: selector.restrict,
@@ -398,11 +581,11 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
         controller: target.name,
         controllerAs: '$ctrl',
         link: function(scope, el) {
-          return utils.bindHostBindings(scope, el, hostBindings);
+          return host.bind(scope, el, hostBindings);
         }
       };
-      utils.bindInput(target, declaration);
-      utils.bindOutput(target, declaration);
+      input.bind(target, declaration);
+      output.bind(target, declaration);
       return declaration;
     }]);
   }
@@ -410,18 +593,18 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/factory", ["./utils", "./multi"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/factory", ["../utils/injector", "./multi"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
-  var utils = $__require('./utils');
+  var injector = $__require('../utils/injector');
   var multi_1 = $__require('./multi');
   function bootstrap(ngModule, target) {
     var annotations = target.__annotations__;
     var factory = annotations.factory;
-    utils.inject(target);
+    injector.inject(ngModule, target);
     var name = factory.name || target.name;
     if (annotations.multi === true) {
       multi_1.bootstrapMultiFactory(ngModule, name, target);
@@ -434,16 +617,16 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/factory", ["./u
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/pipe", ["./utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/pipe", ["../utils/injector"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
-  var utils = $__require('./utils');
+  var injector = $__require('../utils/injector');
   function bootstrap(ngModule, target) {
     var pipe = target.__annotations__.pipe;
-    utils.inject(target);
+    injector.inject(ngModule, target);
     var filter = target.$inject || [];
     filter.push(function() {
       var args = [];
@@ -491,6 +674,35 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/value", ["./mul
   return module.exports;
 });
 
+System.registerDynamic("angular2-polyfill/src/platform/utils/injector", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  function inject(ngModule, target) {
+    var annotations = target.__annotations__ || {};
+    var injectables = [];
+    if (annotations.inject) {
+      annotations.inject.forEach(function(injectable, index) {
+        var name = typeof injectable === 'string' ? injectable : injectable.name;
+        injectables[index] = name;
+      });
+    }
+    if (Reflect.hasMetadata('design:paramtypes', target)) {
+      Reflect.getMetadata('design:paramtypes', target).forEach(function(type, index) {
+        if (type.name !== 'Object' && injectables[index] === undefined) {
+          var name_1 = type.name;
+          injectables[index] = name_1;
+        }
+      });
+    }
+    target.$inject = injectables;
+  }
+  exports.inject = inject;
+  return module.exports;
+});
+
 System.registerDynamic("angular2-polyfill/src/platform/bootstrap/multi", [], true, function($__require, exports, module) {
   "use strict";
   ;
@@ -528,18 +740,18 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/multi", [], tru
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["./utils", "./multi"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["../utils/injector", "./multi"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
-  var utils = $__require('./utils');
+  var injector = $__require('../utils/injector');
   var multi_1 = $__require('./multi');
   function bootstrap(ngModule, target) {
     var annotations = target.__annotations__ || {};
     var injectable = annotations.injectable || {};
-    utils.inject(target);
+    injector.inject(ngModule, target);
     var name = injectable.name || target.name;
     if (annotations.multi === true) {
       multi_1.bootstrapMultiInjectable(ngModule, name, target);
@@ -552,14 +764,14 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/injectable", ["
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/provider", ["../../utils", "./utils"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/provider", ["../../utils", "./index"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
   var utils_1 = $__require('../../utils');
-  var utils = $__require('./utils');
+  var utils = $__require('./index');
   function bootstrap(ngModule, provider) {
     var target = {};
     var name = utils_1.toInjectorName(provider.token);
@@ -585,20 +797,18 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/provider", ["..
       utils_1.annotate(target, 'inject', [utils_1.toInjectorName(provider.useExisting)]);
     }
     utils_1.annotate(target, 'multi', provider.multi);
-    utils.bootstrapHelper(ngModule, target);
+    utils.bootstrap(ngModule, target);
   }
   exports.bootstrap = bootstrap;
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camelcase", "dot-prop", "../../core/core", "./component", "./directive", "./factory", "./pipe", "./value", "./injectable", "./provider"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/bootstrap/index", ["../../core/core", "./component", "./directive", "./factory", "./pipe", "./value", "./injectable", "./provider"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
       global = this,
       GLOBAL = this;
-  var camelcase = $__require('camelcase');
-  var dotProp = $__require('dot-prop');
   var core_1 = $__require('../../core/core');
   var component_1 = $__require('./component');
   var directive_1 = $__require('./directive');
@@ -607,179 +817,10 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
   var value_1 = $__require('./value');
   var injectable_1 = $__require('./injectable');
   var provider_1 = $__require('./provider');
-  function parseHostBinding(key) {
-    var regex = [{
-      type: 'attr',
-      regex: /^([a-zA-Z]+)$/
-    }, {
-      type: 'prop',
-      regex: /^\[([a-zA-Z\.-]+)\]$/
-    }, {
-      type: 'event',
-      regex: /^\(([a-zA-Z]+)\)$/
-    }];
-    for (var i = 0; i < regex.length; i++) {
-      var match = key.match(regex[i].regex);
-      if (match !== null) {
-        return {
-          type: regex[i].type,
-          value: match[1]
-        };
-      }
-    }
-    ;
-    return {
-      type: undefined,
-      value: key
-    };
-  }
-  function applyValueToProperties(el, properties, value) {
-    properties.forEach(function(property) {
-      var splitted = property.split('.');
-      if (splitted.length === 1) {
-        el.prop(camelcase(property), value);
-      } else {
-        var root = splitted.shift();
-        if (root === 'class') {
-          var method = value ? 'addClass' : 'removeClass';
-          el[method](splitted.join('.'));
-        } else {
-          var runner = el.prop(camelcase(root));
-          while (splitted.length > 1) {
-            runner = runner[camelcase(splitted.shift())];
-          }
-          runner[camelcase(splitted.shift())] = value;
-        }
-      }
-    });
-  }
-  function inject(target) {
-    var annotations = target.__annotations__ || {};
-    var injectables = [];
-    if (annotations.inject) {
-      annotations.inject.forEach(function(injectable, index) {
-        if (typeof injectable === 'string') {
-          injectables[index] = injectable;
-        } else if (injectable) {
-          injectables[index] = injectable.name;
-        }
-      });
-    }
-    if (Reflect.hasMetadata('design:paramtypes', target)) {
-      Reflect.getMetadata('design:paramtypes', target).forEach(function(type, index) {
-        if (type.name !== 'Object' && injectables[index] === undefined) {
-          injectables[index] = type.name;
-        }
-      });
-    }
-    target.$inject = injectables;
-  }
-  exports.inject = inject;
-  function bindInput(target, directive) {
-    var annotations = target.__annotations__;
-    var component = annotations.component || annotations.directive;
-    function signOf(key) {
-      if (Reflect.hasMetadata('design:type', target.prototype, key)) {
-        var type = Reflect.getMetadata('design:type', target.prototype, key);
-        if (type.name === 'String' || type.name === 'Number' || type.name === 'Boolean') {
-          return '@';
-        } else {
-          return '=';
-        }
-      }
-      return '@';
-    }
-    (component.inputs || []).forEach(function(key) {
-      var mapping = key.split(/:[ ]*/);
-      directive.bindToController[mapping[0]] = signOf(key) + (mapping[1] || mapping[0]);
-    });
-    Object.keys(annotations.inputs || {}).forEach(function(key) {
-      directive.bindToController[key] = signOf(key) + annotations.inputs[key];
-    });
-  }
-  exports.bindInput = bindInput;
-  function bindOutput(target, directive) {
-    var annotations = target.__annotations__;
-    var component = annotations.component || annotations.directive;
-    (component.outputs || []).forEach(function(key) {
-      var mapping = key.split(/:[ ]*/);
-      directive.bindToController[mapping[0]] = '&' + (mapping[1] || mapping[0]);
-    });
-    Object.keys(annotations.outputs || {}).forEach(function(key) {
-      return directive.bindToController[key] = "&" + annotations.outputs[key];
-    });
-  }
-  exports.bindOutput = bindOutput;
-  function parseHosts(hostBindings) {
-    var result = {
-      attrs: {},
-      events: {},
-      props: {
-        raw: {},
-        expressions: {}
-      }
-    };
-    Object.keys(hostBindings).forEach(function(key) {
-      var value = hostBindings[key];
-      var parsed = parseHostBinding(key);
-      if (parsed.type === 'attr') {
-        result.attrs[parsed.value] = value;
-      } else if (parsed.type === 'event') {
-        var handler = value.match(/^([a-zA-Z]+)\((.*?)\)$/);
-        var method = handler[1];
-        var params = handler[2].length === 0 ? [] : handler[2].split(/,[ ]*/);
-        result.events[parsed.value] = {
-          method: method,
-          params: params
-        };
-      } else if (parsed.type === 'prop') {
-        var raw = value.match(/^['"](.*?)['"]$/);
-        var map = 'expressions';
-        if (raw) {
-          value = raw[1];
-          map = 'raw';
-        }
-        result.props[map][value] = result.props[map][value] || [];
-        result.props[map][value].push(parsed.value);
-      }
-    });
-    return result;
-  }
-  exports.parseHosts = parseHosts;
-  function bindHostBindings(scope, el, hostBindings, controllerAs) {
-    if (controllerAs === void 0) {
-      controllerAs = '$ctrl';
-    }
-    Object.keys(hostBindings.attrs).forEach(function(attribute) {
-      el.attr(attribute, hostBindings.attrs[attribute]);
-    });
-    Object.keys(hostBindings.events).forEach(function(event) {
-      var target = hostBindings.events[event];
-      el.bind(event, function(e) {
-        var ctx = {$event: e};
-        scope.$apply(function() {
-          scope[controllerAs][target.method].apply(scope[controllerAs], target.params.map(function(param) {
-            return dotProp.get(ctx, param);
-          }));
-        });
-      });
-    });
-    Object.keys(hostBindings.props.raw).forEach(function(value) {
-      var properties = hostBindings.props.raw[value];
-      applyValueToProperties(el, properties, value);
-    });
-    Object.keys(hostBindings.props.expressions).forEach(function(expression) {
-      var properties = hostBindings.props.expressions[expression];
-      scope.$watch(controllerAs + "." + expression, function(newValue) {
-        applyValueToProperties(el, properties, newValue);
-      });
-    });
-  }
-  exports.bindHostBindings = bindHostBindings;
-  function bootstrapHelper(ngModule, target) {
+  function bootstrap(ngModule, target) {
     if (Array.isArray(target)) {
       return target.forEach(function(target) {
-        return bootstrapHelper(ngModule, target);
+        return bootstrap(ngModule, target);
       });
     }
     if (target.__annotations__) {
@@ -800,11 +841,11 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/utils", ["camel
     }
     return injectable_1.bootstrap(ngModule, target);
   }
-  exports.bootstrapHelper = bootstrapHelper;
+  exports.bootstrap = bootstrap;
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/core", "../common/common", "./bootstrap/utils", "../core/core"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/core", "../common/common", "./bootstrap/index", "../core/core"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -812,7 +853,7 @@ System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/c
       GLOBAL = this;
   var core_1 = $__require('./bootstrap/core');
   var common_1 = $__require('../common/common');
-  var utils_1 = $__require('./bootstrap/utils');
+  var index_1 = $__require('./bootstrap/index');
   var core_2 = $__require('../core/core');
   function bootstrap(ngModule, component, providers) {
     if (providers === void 0) {
@@ -820,13 +861,13 @@ System.registerDynamic("angular2-polyfill/src/platform/upgrade", ["./bootstrap/c
     }
     core_1.bootstrap(ngModule);
     common_1.bootstrap(ngModule);
-    utils_1.bootstrapHelper(ngModule, core_2.provide(core_2.Injector, {useFactory: function() {
+    index_1.bootstrap(ngModule, core_2.provide(core_2.Injector, {useFactory: function() {
         return new core_2.Injector();
       }}));
     providers.forEach(function(provider) {
-      return utils_1.bootstrapHelper(ngModule, provider);
+      return index_1.bootstrap(ngModule, provider);
     });
-    utils_1.bootstrapHelper(ngModule, component);
+    index_1.bootstrap(ngModule, component);
   }
   exports.bootstrap = bootstrap;
   return module.exports;
