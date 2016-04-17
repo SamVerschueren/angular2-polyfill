@@ -5,6 +5,7 @@ export {Injectable} from './decorators/Injectable';
 export {Input} from './decorators/Input';
 export {Output} from './decorators/Output';
 export {Pipe} from './decorators/Pipe';
+export {Optional} from './decorators/Optional';
 
 export {provide} from './functions/provide';
 

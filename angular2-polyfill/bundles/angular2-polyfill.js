@@ -680,12 +680,27 @@ System.registerDynamic("angular2-polyfill/src/platform/utils/injector", [], true
   var define,
       global = this,
       GLOBAL = this;
+  function createOptionalInject(ngModule, injectable) {
+    var name = "@Optional(" + injectable + ")";
+    var factory = function($injector) {
+      if ($injector.has(injectable)) {
+        return $injector.get(injectable);
+      }
+      return null;
+    };
+    factory.$inject = ['$injector'];
+    ngModule.factory(name, factory);
+    return name;
+  }
   function inject(ngModule, target) {
     var annotations = target.__annotations__ || {};
     var injectables = [];
     if (annotations.inject) {
       annotations.inject.forEach(function(injectable, index) {
         var name = typeof injectable === 'string' ? injectable : injectable.name;
+        if (annotations.optional && annotations.optional[index] === true) {
+          name = createOptionalInject(ngModule, name);
+        }
         injectables[index] = name;
       });
     }
@@ -693,6 +708,9 @@ System.registerDynamic("angular2-polyfill/src/platform/utils/injector", [], true
       Reflect.getMetadata('design:paramtypes', target).forEach(function(type, index) {
         if (type.name !== 'Object' && injectables[index] === undefined) {
           var name_1 = type.name;
+          if (annotations.optional && annotations.optional[index] === true) {
+            name_1 = createOptionalInject(ngModule, name_1);
+          }
           injectables[index] = name_1;
         }
       });
@@ -1088,6 +1106,25 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Pipe", ["../../uti
   return module.exports;
 });
 
+System.registerDynamic("angular2-polyfill/src/core/decorators/Optional", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  function Optional(token) {
+    return function(target, propertyKey, parameterIndex) {
+      if (!target.__annotations__) {
+        target.__annotations__ = {};
+      }
+      target.__annotations__.optional = {};
+      target.__annotations__.optional[parameterIndex] = true;
+    };
+  }
+  exports.Optional = Optional;
+  return module.exports;
+});
+
 System.registerDynamic("angular2-polyfill/src/core/functions/provide", ["../core"], true, function($__require, exports, module) {
   "use strict";
   ;
@@ -1342,7 +1379,7 @@ System.registerDynamic("angular2-polyfill/src/core/classes/opaque_token", [], tr
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Component", "./decorators/Directive", "./decorators/Inject", "./decorators/Injectable", "./decorators/Input", "./decorators/Output", "./decorators/Pipe", "./functions/provide", "./classes/provider", "./classes/injector", "./classes/opaque_token"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Component", "./decorators/Directive", "./decorators/Inject", "./decorators/Injectable", "./decorators/Input", "./decorators/Output", "./decorators/Pipe", "./decorators/Optional", "./functions/provide", "./classes/provider", "./classes/injector", "./classes/opaque_token"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -1362,6 +1399,8 @@ System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Compone
   exports.Output = Output_1.Output;
   var Pipe_1 = $__require('./decorators/Pipe');
   exports.Pipe = Pipe_1.Pipe;
+  var Optional_1 = $__require('./decorators/Optional');
+  exports.Optional = Optional_1.Optional;
   var provide_1 = $__require('./functions/provide');
   exports.provide = provide_1.provide;
   var provider_1 = $__require('./classes/provider');

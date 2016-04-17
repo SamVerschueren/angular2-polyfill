@@ -64,6 +64,9 @@ declare module "angular2-polyfill/src/core/decorators/Pipe" {
     import { PipeMetadata } from "angular2-polyfill/src/core/interfaces/PipeMetadata";
     export function Pipe(pipe: PipeMetadata): (target: any) => void;
 }
+declare module "angular2-polyfill/src/core/decorators/Optional" {
+    export function Optional(token: any): (target: any, propertyKey: string | symbol, parameterIndex: number) => void;
+}
 declare module "angular2-polyfill/src/core/interfaces/ProviderMetadata" {
     export interface ProviderMetadata {
         useClass?: any;
@@ -130,6 +133,7 @@ declare module "angular2-polyfill/src/core/core" {
     export { Input } from "angular2-polyfill/src/core/decorators/Input";
     export { Output } from "angular2-polyfill/src/core/decorators/Output";
     export { Pipe } from "angular2-polyfill/src/core/decorators/Pipe";
+    export { Optional } from "angular2-polyfill/src/core/decorators/Optional";
     export { provide } from "angular2-polyfill/src/core/functions/provide";
     export { Provider } from "angular2-polyfill/src/core/classes/provider";
     export { Injector } from "angular2-polyfill/src/core/classes/injector";

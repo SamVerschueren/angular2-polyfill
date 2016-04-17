@@ -114,6 +114,7 @@ We are using SystemJS as module loader. Feel free to use something else.
 - @RouteConfig
 - @Injectable
 - @Inject
+- @Optional
 - @Pipe
 
 
