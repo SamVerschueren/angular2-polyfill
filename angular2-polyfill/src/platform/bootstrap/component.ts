@@ -52,11 +52,11 @@ export function bootstrap(ngModule, target, parentState?: any) {
 				controllerAs: component.exportAs || '$ctrl',
 				transclude: true,
 				compile: () => {
-					// Prepend all the style elements to the `head` dom element
-					styleElements.forEach(el => headEl.prepend(el));
-
 					return {
 						pre: (scope, el) => {
+							// Prepend all the style elements to the `head` dom element
+							styleElements.forEach(el => headEl.prepend(el));
+
 							// Bind the hosts
 							host.bind(scope, el, hostBindings, component.controllerAs);
 
