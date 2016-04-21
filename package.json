@@ -11,6 +11,7 @@
     "url": "github.com/SamVerschueren"
   },
   "scripts": {
+    "test": "npm run compile && ava",
     "postinstall": "npm run typings install && cd angular2-polyfill && npm install",
     "build": "npm run compile && npm run tsd-gen && gulp build",
     "compile": "tsc -p ./angular2-polyfill",
@@ -21,8 +22,10 @@
     "tsd-gen": "tsc -p angular2-polyfill --outFile angular2-polyfill/bundles/angular2-polyfill.js --module system -d --moduleResolution node --rootDir \"./\""
   },
   "devDependencies": {
+    "ava": "*",
     "gulp": "^3.9.1",
     "gulp-json-editor": "^2.2.1",
+    "sinon": "^1.17.3",
     "systemjs-builder": "^0.15.12",
     "typescript": "^1.8.7",
     "typings": "^0.7.9"

@@ -13,3 +13,4 @@ angular2-polyfill/readme.md
 !gulpfile.js
 !angular2-polyfill/bundles/**/*.js
 !angular2-polyfill/bundles/**/*.d.ts
+!test/**/*.js
