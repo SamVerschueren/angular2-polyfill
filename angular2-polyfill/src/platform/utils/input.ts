@@ -1,31 +1,50 @@
 declare const Reflect;
 
+/**
+ * Bind the inputs defined on the target to the directive.
+ */
 export function bind(target, directive) {
 	const annotations = target.__annotations__;
 	const component = annotations.component || annotations.directive;
 
-	function signOf(key) {
-		if (Reflect.hasMetadata('design:type', target.prototype, key)) {
-			const type = Reflect.getMetadata('design:type', target.prototype, key);
+	function toBinding(key, value) {
+		const match = value.match(/^([@=<])?(.*)?$/);
 
-			if (type.name === 'String' || type.name === 'Number' || type.name === 'Boolean') {
-				return '@';
-			} else {
-				return '=';
+		if (match[1]) {
+			// signed inputs (<, @, =)
+			return {
+				key: match[2] || key,
+				value: match[1] + (match[2] || key)
 			}
 		}
 
-		return '@';
+		let sign = '@';
+
+		if (Reflect.hasMetadata('design:type', target.prototype, key)) {
+			// If the type is not a primitive, use pass-by-reference
+			const type = Reflect.getMetadata('design:type', target.prototype, key);
+
+			if (type.name !== 'String' && type.name !== 'Number' && type.name !== 'Boolean') {
+				sign = '=';
+			}
+		}
+
+		return {
+			key: key,
+			value: sign + value
+		};
 	}
 
 	// Bind all the elements in the `inputs` array
 	(component.inputs || []).forEach(key => {
 		const mapping = key.split(/:[ ]*/);
-		directive.bindToController[mapping[0]] = signOf(key) + (mapping[1] || mapping[0]);
+		const binding = toBinding(mapping[0], mapping[1] || mapping[0]);
+		directive.bindToController[binding.key] = binding.value;
 	});
 
 	// Bind all the elements in the `@Input` annotation list
 	Object.keys(annotations.inputs || {}).forEach(key => {
-		directive.bindToController[key] = signOf(key) + annotations.inputs[key];
+		const binding = toBinding(key, annotations.inputs[key]);
+		directive.bindToController[binding.key] = binding.value;
 	});
 }
