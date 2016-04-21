@@ -1,34 +1,11 @@
 import test from 'ava';
 import sinon from 'sinon';
 import {Reflect} from './fixtures/reflect';
+import utils from './fixtures/utils';
 import {bind as m} from '../../../angular2-polyfill/src/platform/utils/input';
 
 const sandbox = sinon.sandbox.create();
-
-const createTarget = (inputs) => {
-	const ret = {
-		__annotations__: {
-			component: {}
-		}
-	};
-
-	if (Array.isArray(inputs)) {
-		ret.__annotations__.component.inputs = inputs;
-	} else {
-		ret.__annotations__.inputs = inputs;
-	}
-
-	return ret;
-};
-
-const bind = (inputs) => {
-	const target = createTarget(inputs);
-	const directive = {bindToController: {}};
-
-	m(target, directive);
-
-	return directive.bindToController;
-};
+const bind = utils.bind.bind(m, 'inputs');
 
 test.before(() => {
 	const has = sandbox.stub(Reflect, 'hasMetadata');
