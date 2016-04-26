@@ -108,7 +108,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 			}
 
 			// Bootstrap the route component if it's not the same as the target component
-			if (route.component.name !== component.name) {
+			if (route.component.name !== target.name) {
 				bootstrap(ngModule, route.component, state);
 			}
 
