@@ -95,7 +95,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 		}]);
 
 	if (annotations.routes) {
-		var cmpStates = [];
+		const cmpStates = [];
 
 		annotations.routes.forEach(route => {
 			const name = route.name || route.as;

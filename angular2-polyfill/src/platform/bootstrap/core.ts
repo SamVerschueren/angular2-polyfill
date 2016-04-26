@@ -7,9 +7,9 @@ export function bootstrap(ngModule) {
 
 	bootstrapped = true;
 
-	ngModule.run(['$q', '$window', function($q, $window) {
+	ngModule.run(['$q', '$window', ($q, $window) => {
 		// Create an Angular aware global Promise object
-		$window.Promise = function (executor) {
+		$window.Promise = executor => {
 			return $q(executor);
 		};
 
@@ -17,24 +17,24 @@ export function bootstrap(ngModule) {
 		$window.Promise.reject = $q.reject.bind($q);
 		$window.Promise.resolve = $q.when.bind($q);
 
-		$window.Promise.race = function (promises) {
-			var promiseMgr = $q.defer();
+		$window.Promise.race = promises => {
+			let promiseMgr = $q.defer();
 
-			var resolve = function (result) {
+			const resolve = result => {
 				if (promiseMgr) {
 					promiseMgr.resolve(result);
 					promiseMgr = null;
 				}
 			};
 
-			var reject = function (err) {
+			const reject = err => {
 				if (promiseMgr) {
 					promiseMgr.reject(err);
 					promiseMgr = null;
 				}
 			};
 
-			for (var i = 0; i < promises.length; i++) {
+			for (let i = 0; i < promises.length; i++) {
 				promises[i]
 					.then(resolve)
 					.catch(reject);
