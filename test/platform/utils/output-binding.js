@@ -15,8 +15,8 @@ test('mapped outputs array', t => {
 });
 
 test('outputs annotation', t => {
-	t.deepEqual(bind(['foo']), {foo: '&foo'});
-	t.deepEqual(bind(['foo', 'bar', 'baz']), {foo: '&foo', bar: '&bar', baz: '&baz'});
+	t.deepEqual(bind({foo: 'foo'}), {foo: '&foo'});
+	t.deepEqual(bind({foo: 'foo', bar: 'bar', baz: 'baz'}), {foo: '&foo', bar: '&bar', baz: '&baz'});
 });
 
 test('mapped outputs annotation', t => {
