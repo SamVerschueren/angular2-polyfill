@@ -1,6 +1,6 @@
 {
   "name": "angular2-polyfill",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "Angular2 polyfill for Angular1",
   "license": "MIT",
   "repository": "SamVerschueren/angular2-polyfill",

@@ -289,6 +289,9 @@ declare module "angular2-polyfill/src/platform/utils/injector" {
     export function inject(ngModule: ng.IModule, target: any): void;
 }
 declare module "angular2-polyfill/src/platform/utils/input" {
+    /**
+     * Bind the inputs defined on the target to the directive.
+     */
     export function bind(target: any, directive: any): void;
 }
 declare module "angular2-polyfill/src/platform/utils/output" {

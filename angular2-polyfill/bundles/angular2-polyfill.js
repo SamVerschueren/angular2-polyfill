@@ -262,10 +262,10 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
         controllerAs: component.exportAs || '$ctrl',
         transclude: true,
         compile: function() {
-          styleElements.forEach(function(el) {
-            return headEl.prepend(el);
-          });
           return {pre: function(scope, el) {
+              styleElements.forEach(function(el) {
+                return headEl.prepend(el);
+              });
               host.bind(scope, el, hostBindings, component.controllerAs);
               if (target.prototype.ngOnInit) {
                 var init = $compile("<div ng-init=\"" + directive.controllerAs + ".ngOnInit();\"></div>")(scope);
@@ -292,7 +292,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
       return directive;
     }]);
     if (annotations.routes) {
-      var cmpStates = [];
+      var cmpStates_1 = [];
       annotations.routes.forEach(function(route) {
         var name = route.name || route.as;
         var routerAnnotations = route.component.__annotations__ && route.component.__annotations__.router;
@@ -301,7 +301,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
           url: route.path,
           isDefault: route.useAsDefault === true
         };
-        if (route.component.name !== component.name) {
+        if (route.component.name !== target.name) {
           bootstrap(ngModule, route.component, state);
         }
         if (state.url.substr(-4) === '/...') {
@@ -312,7 +312,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
           state.parent = parentState.name;
         }
         state.template = "<" + map[route.component.name] + "></" + map[route.component.name] + ">";
-        cmpStates.push(state.name);
+        cmpStates_1.push(state.name);
         states[name] = state;
         if (routerAnnotations && routerAnnotations.canActivate) {
           var hook = ['Router', '$state', '$stateParams'];
@@ -336,7 +336,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
         }
       });
       ngModule.config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvider, $stateProvider) {
-        cmpStates.forEach(function(name) {
+        cmpStates_1.forEach(function(name) {
           var state = states[name];
           $stateProvider.state(name, state);
           if (state.isDefault) {
@@ -493,23 +493,34 @@ System.registerDynamic("angular2-polyfill/src/platform/utils/input", [], true, f
   function bind(target, directive) {
     var annotations = target.__annotations__;
     var component = annotations.component || annotations.directive;
-    function signOf(key) {
+    function toBinding(key, value) {
+      var match = value.match(/^([@=<])?(.*)?$/);
+      if (match[1]) {
+        return {
+          key: match[2] || key,
+          value: match[1] + (match[2] || key)
+        };
+      }
+      var sign = '@';
       if (Reflect.hasMetadata('design:type', target.prototype, key)) {
         var type = Reflect.getMetadata('design:type', target.prototype, key);
-        if (type.name === 'String' || type.name === 'Number' || type.name === 'Boolean') {
-          return '@';
-        } else {
-          return '=';
+        if (type.name !== 'String' && type.name !== 'Number' && type.name !== 'Boolean') {
+          sign = '=';
         }
       }
-      return '@';
+      return {
+        key: key,
+        value: sign + value
+      };
     }
     (component.inputs || []).forEach(function(key) {
       var mapping = key.split(/:[ ]*/);
-      directive.bindToController[mapping[0]] = signOf(key) + (mapping[1] || mapping[0]);
+      var binding = toBinding(mapping[0], mapping[1] || mapping[0]);
+      directive.bindToController[binding.key] = binding.value;
     });
     Object.keys(annotations.inputs || {}).forEach(function(key) {
-      directive.bindToController[key] = signOf(key) + annotations.inputs[key];
+      var binding = toBinding(key, annotations.inputs[key]);
+      directive.bindToController[binding.key] = binding.value;
     });
   }
   exports.bind = bind;
