@@ -25,6 +25,7 @@
     "ava": "*",
     "gulp": "^3.9.1",
     "gulp-json-editor": "^2.2.1",
+    "jspm": "^0.16.34",
     "sinon": "^1.17.3",
     "systemjs-builder": "^0.15.12",
     "typescript": "^1.8.7",
