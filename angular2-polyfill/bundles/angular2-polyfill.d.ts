@@ -65,7 +65,7 @@ declare module "angular2-polyfill/src/core/decorators/Pipe" {
     export function Pipe(pipe: PipeMetadata): (target: any) => void;
 }
 declare module "angular2-polyfill/src/core/decorators/Optional" {
-    export function Optional(token: any): (target: any, propertyKey: string | symbol, parameterIndex: number) => void;
+    export function Optional(): (target: any, propertyKey: string | symbol, parameterIndex: number) => void;
 }
 declare module "angular2-polyfill/src/core/interfaces/ProviderMetadata" {
     export interface ProviderMetadata {
@@ -110,6 +110,19 @@ declare module "angular2-polyfill/src/core/classes/injector" {
         getOptional(token: any): {};
     }
 }
+declare module "angular2-polyfill/src/core/classes/event_emitter" {
+    import { Subject } from 'rxjs';
+    export class EventEmitter<T> extends Subject<T> {
+        private _isAsync;
+        constructor(isAsync?: boolean);
+        emit(value: T): void;
+        /**
+         * @deprecated - use .emit(value) instead
+         */
+        next(value: any): void;
+        subscribe(generatorOrNext?: any, error?: any, complete?: any): any;
+    }
+}
 declare module "angular2-polyfill/src/core/interfaces/OnInit" {
     export interface OnInit {
         ngOnInit(): void;
@@ -138,6 +151,7 @@ declare module "angular2-polyfill/src/core/core" {
     export { Provider } from "angular2-polyfill/src/core/classes/provider";
     export { Injector } from "angular2-polyfill/src/core/classes/injector";
     export { OpaqueToken } from "angular2-polyfill/src/core/classes/opaque_token";
+    export { EventEmitter } from "angular2-polyfill/src/core/classes/event_emitter";
     export { OnInit } from "angular2-polyfill/src/core/interfaces/OnInit";
     export { OnDestroy } from "angular2-polyfill/src/core/interfaces/OnDestroy";
     export { PipeTransform } from "angular2-polyfill/src/core/interfaces/PipeTransform";

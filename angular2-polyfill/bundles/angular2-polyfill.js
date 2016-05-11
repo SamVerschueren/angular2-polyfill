@@ -538,10 +538,34 @@ System.registerDynamic("angular2-polyfill/src/platform/utils/output", [], true, 
     var component = annotations.component || annotations.directive;
     (component.outputs || []).forEach(function(key) {
       var mapping = key.split(/:[ ]*/);
-      directive.bindToController[mapping[0]] = '&' + (mapping[1] || mapping[0]);
+      directive.bindToController[mapping[0]] = "&" + (mapping[1] || mapping[0]);
     });
     Object.keys(annotations.outputs || {}).forEach(function(key) {
-      return directive.bindToController[key] = "&" + annotations.outputs[key];
+      var name = annotations.outputs[key];
+      var wrapper = "__" + name + "EventWrapper";
+      var fn;
+      Object.defineProperty(target.prototype, name, {
+        enumerable: true,
+        configurable: true,
+        get: function() {
+          return fn;
+        },
+        set: function(value) {
+          var _this = this;
+          if (this[wrapper] === undefined) {
+            this[wrapper] = value;
+          }
+          if (typeof value === 'function') {
+            fn = this[wrapper];
+          } else if (value.emit && value.subscribe) {
+            fn = value;
+            value.subscribe(function(e) {
+              _this[wrapper]({$event: e});
+            });
+          }
+        }
+      });
+      directive.bindToController[key] = "&" + name;
     });
   }
   exports.bind = bind;
@@ -1123,7 +1147,7 @@ System.registerDynamic("angular2-polyfill/src/core/decorators/Optional", [], tru
   var define,
       global = this,
       GLOBAL = this;
-  function Optional(token) {
+  function Optional() {
     return function(target, propertyKey, parameterIndex) {
       if (!target.__annotations__) {
         target.__annotations__ = {};
@@ -1390,7 +1414,107 @@ System.registerDynamic("angular2-polyfill/src/core/classes/opaque_token", [], tr
   return module.exports;
 });
 
-System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Component", "./decorators/Directive", "./decorators/Inject", "./decorators/Injectable", "./decorators/Input", "./decorators/Output", "./decorators/Pipe", "./decorators/Optional", "./functions/provide", "./classes/provider", "./classes/injector", "./classes/opaque_token"], true, function($__require, exports, module) {
+System.registerDynamic("angular2-polyfill/src/core/classes/event_emitter", ["rxjs"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var rxjs_1 = $__require('rxjs');
+  var EventEmitter = (function(_super) {
+    __extends(EventEmitter, _super);
+    function EventEmitter(isAsync) {
+      if (isAsync === void 0) {
+        isAsync = true;
+      }
+      _super.call(this);
+      this._isAsync = isAsync;
+    }
+    EventEmitter.prototype.emit = function(value) {
+      _super.prototype.next.call(this, value);
+    };
+    EventEmitter.prototype.next = function(value) {
+      _super.prototype.next.call(this, value);
+    };
+    EventEmitter.prototype.subscribe = function(generatorOrNext, error, complete) {
+      var schedulerFn;
+      var errorFn = function(err) {
+        return null;
+      };
+      var completeFn = function() {
+        return null;
+      };
+      if (generatorOrNext && typeof generatorOrNext === 'object') {
+        schedulerFn = this._isAsync ? function(value) {
+          setTimeout(function() {
+            return generatorOrNext.next(value);
+          });
+        } : function(value) {
+          generatorOrNext.next(value);
+        };
+        if (generatorOrNext.error) {
+          errorFn = this._isAsync ? function(err) {
+            setTimeout(function() {
+              return generatorOrNext.error(err);
+            });
+          } : function(err) {
+            generatorOrNext.error(err);
+          };
+        }
+        if (generatorOrNext.complete) {
+          completeFn = this._isAsync ? function() {
+            setTimeout(function() {
+              return generatorOrNext.complete();
+            });
+          } : function() {
+            generatorOrNext.complete();
+          };
+        }
+      } else {
+        schedulerFn = this._isAsync ? function(value) {
+          setTimeout(function() {
+            return generatorOrNext(value);
+          });
+        } : function(value) {
+          generatorOrNext(value);
+        };
+        if (error) {
+          errorFn = this._isAsync ? function(err) {
+            setTimeout(function() {
+              return error(err);
+            });
+          } : function(err) {
+            error(err);
+          };
+        }
+        if (complete) {
+          completeFn = this._isAsync ? function() {
+            setTimeout(function() {
+              return complete();
+            });
+          } : function() {
+            complete();
+          };
+        }
+      }
+      return _super.prototype.subscribe.call(this, schedulerFn, errorFn, completeFn);
+    };
+    return EventEmitter;
+  }(rxjs_1.Subject));
+  exports.EventEmitter = EventEmitter;
+  return module.exports;
+});
+
+System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Component", "./decorators/Directive", "./decorators/Inject", "./decorators/Injectable", "./decorators/Input", "./decorators/Output", "./decorators/Pipe", "./decorators/Optional", "./functions/provide", "./classes/provider", "./classes/injector", "./classes/opaque_token", "./classes/event_emitter"], true, function($__require, exports, module) {
   "use strict";
   ;
   var define,
@@ -1420,6 +1544,8 @@ System.registerDynamic("angular2-polyfill/src/core/core", ["./decorators/Compone
   exports.Injector = injector_1.Injector;
   var opaque_token_1 = $__require('./classes/opaque_token');
   exports.OpaqueToken = opaque_token_1.OpaqueToken;
+  var event_emitter_1 = $__require('./classes/event_emitter');
+  exports.EventEmitter = event_emitter_1.EventEmitter;
   return module.exports;
 });
 
