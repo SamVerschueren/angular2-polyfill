@@ -1,17 +1,20 @@
+class Target {
+
+	constructor() {
+
+	}
+}
+
 const createTarget = (type, inputs) => {
-	const ret = {
-		__annotations__: {
-			component: {}
-		}
-	};
+	Target.__annotations__ = {component: {}};
 
 	if (Array.isArray(inputs)) {
-		ret.__annotations__.component[type] = inputs;
+		Target.__annotations__.component[type] = inputs;
 	} else {
-		ret.__annotations__[type] = inputs;
+		Target.__annotations__[type] = inputs;
 	}
 
-	return ret;
+	return Target;
 };
 
 exports.bind = function (type, inputs) {
