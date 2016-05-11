@@ -22,5 +22,8 @@
     "camelcase": "^2.1.1",
     "decamelize": "^1.2.0",
     "dot-prop": "^2.4.0"
+  },
+  "devDependencies": {
+    "rxjs": "5.0.0-beta.6"
   }
 }
