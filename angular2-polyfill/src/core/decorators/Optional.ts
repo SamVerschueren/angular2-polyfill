@@ -1,4 +1,4 @@
-export function Optional(token: any) {
+export function Optional() {
 	return (target: any, propertyKey: string | symbol, parameterIndex: number) => {
 		if (!target.__annotations__) {
 			target.__annotations__ = {};
