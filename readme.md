@@ -125,6 +125,10 @@ We are using SystemJS as module loader. Feel free to use something else.
 
 ## Services
 
+### Core
+
+- EventEmitter
+
 ### DI
 
 - Injector
