@@ -533,38 +533,42 @@ System.registerDynamic("angular2-polyfill/src/platform/utils/output", [], true, 
   var define,
       global = this,
       GLOBAL = this;
+  function attachPropertyHook(target, key, name) {
+    var wrapper = "__" + name + "Fn";
+    Object.defineProperty(target.prototype, key, {
+      enumerable: true,
+      configurable: true,
+      get: function() {
+        return this[("_" + name)];
+      },
+      set: function(value) {
+        var _this = this;
+        if (this[wrapper] === undefined) {
+          this[wrapper] = value;
+        }
+        if (typeof value === 'function') {
+          this[("_" + name)] = this[wrapper];
+        } else if (value && value.emit && value.subscribe) {
+          this[("_" + name)] = value;
+          value.subscribe(function(e) {
+            _this[wrapper]({$event: e});
+          });
+        }
+      }
+    });
+  }
   function bind(target, directive) {
     var annotations = target.__annotations__;
     var component = annotations.component || annotations.directive;
     (component.outputs || []).forEach(function(key) {
       var mapping = key.split(/:[ ]*/);
-      directive.bindToController[mapping[0]] = "&" + (mapping[1] || mapping[0]);
+      var name = mapping[1] || mapping[0];
+      attachPropertyHook(target, key, name);
+      directive.bindToController[mapping[0]] = "&" + name;
     });
     Object.keys(annotations.outputs || {}).forEach(function(key) {
       var name = annotations.outputs[key];
-      var wrapper = "__" + name + "EventWrapper";
-      var fn;
-      Object.defineProperty(target.prototype, name, {
-        enumerable: true,
-        configurable: true,
-        get: function() {
-          return fn;
-        },
-        set: function(value) {
-          var _this = this;
-          if (this[wrapper] === undefined) {
-            this[wrapper] = value;
-          }
-          if (typeof value === 'function') {
-            fn = this[wrapper];
-          } else if (value.emit && value.subscribe) {
-            fn = value;
-            value.subscribe(function(e) {
-              _this[wrapper]({$event: e});
-            });
-          }
-        }
-      });
+      attachPropertyHook(target, key, name);
       directive.bindToController[key] = "&" + name;
     });
   }
