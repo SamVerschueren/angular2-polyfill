@@ -253,7 +253,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
     });
     injector.inject(ngModule, target);
     var hostBindings = host.parse(component.host || {});
-    ngModule.controller(target.name, target).directive(name, ['$compile', function($compile) {
+    ngModule.controller(target.name, target).directive(name, ['$rootScope', '$compile', function($rootScope, $compile) {
       var directive = {
         restrict: 'E',
         scope: {},
@@ -283,7 +283,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/component", ["c
         }
       };
       input.bind(target, directive);
-      output.bind(target, directive);
+      output.bind($rootScope, target, directive);
       if (component.template) {
         directive.template = component.template;
       } else {
@@ -533,7 +533,7 @@ System.registerDynamic("angular2-polyfill/src/platform/utils/output", [], true, 
   var define,
       global = this,
       GLOBAL = this;
-  function attachPropertyHook(target, key, name) {
+  function attachPropertyHook(scope, target, key, name) {
     var wrapper = "__" + name + "Fn";
     Object.defineProperty(target.prototype, key, {
       enumerable: true,
@@ -551,24 +551,26 @@ System.registerDynamic("angular2-polyfill/src/platform/utils/output", [], true, 
         } else if (value && value.emit && value.subscribe) {
           this[("_" + name)] = value;
           value.subscribe(function(e) {
-            _this[wrapper]({$event: e});
+            scope.$apply(function() {
+              _this[wrapper]({$event: e});
+            });
           });
         }
       }
     });
   }
-  function bind(target, directive) {
+  function bind(scope, target, directive) {
     var annotations = target.__annotations__;
     var component = annotations.component || annotations.directive;
     (component.outputs || []).forEach(function(key) {
       var mapping = key.split(/:[ ]*/);
       var name = mapping[1] || mapping[0];
-      attachPropertyHook(target, key, name);
+      attachPropertyHook(scope, target, key, name);
       directive.bindToController[mapping[0]] = "&" + name;
     });
     Object.keys(annotations.outputs || {}).forEach(function(key) {
       var name = annotations.outputs[key];
-      attachPropertyHook(target, key, name);
+      attachPropertyHook(scope, target, key, name);
       directive.bindToController[key] = "&" + name;
     });
   }
@@ -612,7 +614,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
     var selector = parseSelector(directive.selector);
     var hostBindings = host.parse(directive.host || {});
     injector.inject(ngModule, target);
-    ngModule.controller(target.name, target).directive(selector.name, [function() {
+    ngModule.controller(target.name, target).directive(selector.name, ['$rootScope', function($rootScope) {
       var declaration = {
         restrict: selector.restrict,
         scope: {},
@@ -624,7 +626,7 @@ System.registerDynamic("angular2-polyfill/src/platform/bootstrap/directive", [".
         }
       };
       input.bind(target, declaration);
-      output.bind(target, declaration);
+      output.bind($rootScope, target, declaration);
       return declaration;
     }]);
   }

@@ -309,7 +309,7 @@ declare module "angular2-polyfill/src/platform/utils/input" {
     export function bind(target: any, directive: any): void;
 }
 declare module "angular2-polyfill/src/platform/utils/output" {
-    export function bind(target: any, directive: any): void;
+    export function bind(scope: any, target: any, directive: any): void;
 }
 declare module "angular2-polyfill/src/platform/bootstrap/component" {
     export function bootstrap(ngModule: any, target: any, parentState?: any): string;
