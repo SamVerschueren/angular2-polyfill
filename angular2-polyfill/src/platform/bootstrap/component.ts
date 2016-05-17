@@ -43,7 +43,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 
 	ngModule
 		.controller(target.name, target)
-		.directive(name, ['$compile', ($compile) => {
+		.directive(name, ['$rootScope', '$compile', ($rootScope, $compile) => {
 			const directive: any = {
 				restrict: 'E',
 				scope: {},
@@ -82,7 +82,7 @@ export function bootstrap(ngModule, target, parentState?: any) {
 
 			// Bind inputs and outputs
 			input.bind(target, directive);
-			output.bind(target, directive);
+			output.bind($rootScope, target, directive);
 
 			// Set the template
 			if (component.template) {

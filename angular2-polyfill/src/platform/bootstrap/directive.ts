@@ -33,7 +33,7 @@ export function bootstrap(ngModule, target) {
 
 	ngModule
 		.controller(target.name, target)
-		.directive(selector.name, [() => {
+		.directive(selector.name, ['$rootScope', ($rootScope) => {
 			const declaration: any = {
 				restrict: selector.restrict,
 				scope: {},
@@ -45,7 +45,7 @@ export function bootstrap(ngModule, target) {
 
 			// Bind inputs and outputs
 			input.bind(target, declaration);
-			output.bind(target, declaration);
+			output.bind($rootScope, target, declaration);
 
 			return declaration;
 		}]);

@@ -7,20 +7,32 @@ class Target {
 	}
 }
 
-const createTarget = (type, inputs) => {
+const createTarget = (type, v) => {
 	Target.__annotations__ = {component: {}};
 
-	if (Array.isArray(inputs)) {
-		Target.__annotations__.component[type] = inputs;
+	if (Array.isArray(v)) {
+		Target.__annotations__.component[type] = v;
 	} else {
-		Target.__annotations__[type] = inputs;
+		Target.__annotations__[type] = v;
 	}
 
 	return Target;
 };
 
-exports.bind = function (type, inputs) {
-	const target = createTarget(type, inputs);
+exports.output = function (scope, outputs) {
+	const target = createTarget('outputs', outputs);
+	const directive = {bindToController: {}};
+
+	this(scope, target, directive);
+
+	return {
+		target,
+		bindings: directive.bindToController
+	};
+}
+
+exports.input = function (inputs) {
+	const target = createTarget('inputs', inputs);
 	const directive = {bindToController: {}};
 
 	this(target, directive);

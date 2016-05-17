@@ -4,7 +4,7 @@
  * that property is called and we can hook into the internals. This way we can also
  * handle event emitters.
  */
-function attachPropertyHook(target, key, name) {
+function attachPropertyHook(scope, target, key, name) {
 	const wrapper = `__${name}Fn`;
 
 	Object.defineProperty(target.prototype, key, {
@@ -15,6 +15,7 @@ function attachPropertyHook(target, key, name) {
 		},
 		set: function (value) {
 			if (this[wrapper] === undefined) {
+				// Catch the `<any foo="$ctrl.listener($event)" />` setter
 				this[wrapper] = value;
 			}
 
@@ -25,14 +26,16 @@ function attachPropertyHook(target, key, name) {
 				// It's an EventEmitter
 				this[`_${name}`] = value;
 				value.subscribe(e => {
-					this[wrapper]({$event: e});
+					scope.$apply(() => {
+						this[wrapper]({$event: e});
+					});
 				});
 			}
 		}
 	});
 }
 
-export function bind(target, directive) {
+export function bind(scope, target, directive) {
 	const annotations = target.__annotations__;
 	const component = annotations.component || annotations.directive;
 
@@ -41,7 +44,7 @@ export function bind(target, directive) {
 		const mapping = key.split(/:[ ]*/);
 		const name = mapping[1] || mapping[0];
 
-		attachPropertyHook(target, key, name);
+		attachPropertyHook(scope, target, key, name);
 		directive.bindToController[mapping[0]] = `&${name}`;
 	});
 
@@ -49,7 +52,7 @@ export function bind(target, directive) {
 	Object.keys(annotations.outputs || {}).forEach(key => {
 		const name = annotations.outputs[key];
 
-		attachPropertyHook(target, key, name);
+		attachPropertyHook(scope, target, key, name);
 		directive.bindToController[key] = `&${name}`;
 	});
 }

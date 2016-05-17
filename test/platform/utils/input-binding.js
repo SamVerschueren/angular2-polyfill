@@ -5,7 +5,7 @@ import utils from './fixtures/utils';
 import {bind as m} from '../../../angular2-polyfill/src/platform/utils/input';
 
 const sandbox = sinon.sandbox.create();
-const bind = utils.bind.bind(m, 'inputs');
+const bind = utils.input.bind(m);
 
 test.before(() => {
 	const has = sandbox.stub(Reflect, 'hasMetadata');
