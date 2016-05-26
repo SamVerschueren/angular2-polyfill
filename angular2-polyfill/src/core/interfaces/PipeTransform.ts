@@ -1,3 +1,3 @@
 export interface PipeTransform {
-	transform(value: any, args: any[]): any;
+	transform(value: any, ...args: any[]): any;
 }

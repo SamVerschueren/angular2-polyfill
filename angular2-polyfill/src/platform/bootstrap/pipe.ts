@@ -10,9 +10,7 @@ export function bootstrap(ngModule, target) {
 		const instance = new target(...args);
 
 		// Create the filter function
-		const filter: any = function(value, ...args: any[]) {
-			return instance.transform(value, args);
-		}
+		const filter: any = instance.transform;
 
 		// If pure is set to false, it's a stateful filter
 		filter.$stateful = pipe.pure === false;
