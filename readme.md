@@ -27,7 +27,7 @@ we are using `ui-router`, the only thing we add as a template is the place where
 
 ```ts
 import {Component} from 'angular2-polyfill/core';
-import {RouteConfig} from 'angular2-polyfill/router';
+import {RouteConfig} from 'angular2-polyfill/router-deprecated';
 import {HomeComponent} from '../home/home.component';
 
 @Component({

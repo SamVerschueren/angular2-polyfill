@@ -8,7 +8,7 @@ const pkg = require('./package.json');
 const ANGULAR2_POLYFILL_BUNDLE_CONFIG = [
 	'angular2-polyfill/core',
 	'angular2-polyfill/http',
-	'angular2-polyfill/router',
+	'angular2-polyfill/router-deprecated',
 	'angular2-polyfill/platform/upgrade'
 ];
 

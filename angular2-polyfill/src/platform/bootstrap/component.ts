@@ -1,6 +1,6 @@
 import * as camelcase from 'camelcase';
 import * as decamelize from 'decamelize';
-import {Router} from '../../router/router';
+import {Router} from '../../router-deprecated/router';
 import * as utils from './index';
 import * as host from '../utils/host';
 import * as injector from '../utils/injector';
