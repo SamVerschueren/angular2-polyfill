@@ -17,20 +17,20 @@ function attachPropertyHook(scope, target, key, name) {
 			if (this[wrapper] === undefined) {
 				// Catch the `<any foo="$ctrl.listener($event)" />` setter
 				this[wrapper] = value;
+				return;
 			}
 
-			if (typeof value === 'function') {
-				// If it is a function, the result is just the wrapper function
-				this[`_${name}`] = this[wrapper];
-			} else if (value && value.emit && value.subscribe) {
-				// It's an EventEmitter
-				this[`_${name}`] = value;
-				value.subscribe(e => {
-					scope.$apply(() => {
-						this[wrapper]({$event: e});
-					});
-				});
+			if (!(value && value.emit && value.subscribe)) {
+				// Throw error if the value is not an EventEmitter
+				throw new TypeError(`Expected '${key}' to be an 'EventEmitter', got '${typeof value}'.`);
 			}
+
+			this[`_${name}`] = value;
+			value.subscribe(e => {
+				scope.$apply(() => {
+					this[wrapper]({$event: e});
+				});
+			});
 		}
 	});
 }

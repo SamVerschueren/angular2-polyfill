@@ -39,15 +39,17 @@ test('has property hook', t => {
 	t.true(target(t, ['foo']).prototype.hasOwnProperty('foo'));
 });
 
-test('set property hook function', t => {
+test('property hook function throws error', t => {
 	const Target = target(t, ['foo']);
 	const instance = new Target();
-	instance.foo = () => 'bar';
+	instance.foo = () => { };
 
-	t.is(instance.foo(), 'bar');
+	t.throws(() => {
+		instance.foo = () => 'bar';
+	}, `Expected 'foo' to be an 'EventEmitter', got 'function'.`);
 });
 
-test.cb('set property hook EventEmitter', t => {
+test.cb('property hook EventEmitter', t => {
 	const Target = target(t, ['foo']);
 	const instance = new Target();
 
