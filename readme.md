@@ -1,4 +1,7 @@
-# angular2-polyfill [![Build Status](https://travis-ci.org/SamVerschueren/angular2-polyfill.svg?branch=master)](https://travis-ci.org/SamVerschueren/angular2-polyfill)
+# angular2-polyfill
+
+[![Build Status](https://travis-ci.org/SamVerschueren/angular2-polyfill.svg?branch=master)](https://travis-ci.org/SamVerschueren/angular2-polyfill)
+[![CDNJS](https://img.shields.io/cdnjs/v/angular2-polyfill.svg)](https://cdnjs.com/libraries/angular2-polyfill)
 
 > Angular2 polyfill for Angular1
 
